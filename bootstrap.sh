@@ -1,6 +1,6 @@
 #!/bin/sh
 #
-#  autogen.sh - Autootols boostrap for developers
+#    boostrap.sh - Autootols boostrap for developers
 #    
 #    Copyright (c) 2021 - Monaco F. J. <monaco@usp.br>
 #
