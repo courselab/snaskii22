@@ -33,6 +33,7 @@ snaskii_bin_LDADD = -lncurses $(LIBOBJS) @PTHREAD_LIBS@
 
 snaskii : snaskii.sh
 	cp $< $@
+	chmod u+x $@
 
 install-exec-hook: 
 	cd $(DESTDIR)/$(bindir) && mv ttsnake.bin ttsnake
