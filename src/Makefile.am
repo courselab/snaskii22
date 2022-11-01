@@ -42,7 +42,7 @@ uninstall-hook:
 	rm -f $(DESTDIR)/$(bindir)/ttsnake
 
 clean-local:
-	rm -f ttsnake
+	rm -f snaskii
 
 
 
