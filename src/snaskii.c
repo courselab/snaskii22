@@ -18,6 +18,8 @@
    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+/* POSIX C libraries. */
+
 #include <stdlib.h>
 #include <stdio.h>
 #include <unistd.h>
@@ -25,8 +27,23 @@
 #include <sys/time.h>
 #include <signal.h>
 #include <pthread.h>
-#include <ncurses.h>
+
+/* Autoconf tests. */
+
 #include <config.h>
+
+/* We use ncurses library, a CRT screen handling and optimization package. 
+   It implements wrapper over terminal capabilities and provides handy
+   functions to draw characters at arbitrary positions on the screen,
+   clear the terminal etc.
+
+   See https://tldp.org/HOWTO/NCURSES-Programming-HOWTO.
+
+*/
+
+#include <ncurses.h>
+
+/* This header contains some handy functions. */
 
 #include "utils.h"
 
@@ -41,8 +58,8 @@
 #define BLANK ' '		/* Blank-screen character. */
 
 #define BUFFSIZE 1024		/* Generic, auxilary buffer size. */
-#define SCENE_DIR_INTRO "intro" /* Path to the intro animation scenes. */
-#define SCENE_DIR_GAME  "game"	/* Path to the game animation scene. */
+#define SCENE_DIR_INTRO "intro" /* Directory with the intro animation scenes. */
+#define SCENE_DIR_GAME  "game"	/* Directory with the game animation scene. */
 
 #define SNAKE_BODY       "O"     /* Character to draw the snake. */
 #define ENERGY_BLOCK     "+"	 /* Character to draw the energy block. */
@@ -62,11 +79,13 @@ int movie_delay;		/* How long between move scenes scenes. */
 int game_delay;			/* How long between game scenes. */
 int go_on;			/* Whether to continue or to exit main loop.*/
 
-/* SIGINT handler. The variable go_on controls the main loop. */
+/* SIGINT handler. 
+
+   This function is called asynchronously when the user press Ctr-C.  */
 
 void quit ()
 {
-  go_on=0;
+  go_on=0;			/* Sentinel controlling the main loop.*/
 }
 
 /* The snake data structrue. */
@@ -86,7 +105,7 @@ struct snake_st
   direction_t direction;	 /* Moviment direction. */
 };
 
-snake_t snake;			/* The snake istance. */
+snake_t snake;			/* The snake instance. */
 
 /* Energy blocks. */
 
@@ -99,15 +118,15 @@ struct
 
 /* Clear the scene vector. 
 
-   The scene vector is an array of nscenes matrixes of
-   NROWS x NCOLS chars, containg the ascii image.
+   The scene vector is an array of nscenes scenes. Each scene is a matrix of
+   (NROWS x NCOLS) chars, representing and image in ASCII.
 */
 
 void clearscene (char scene[][NROWS][NCOLS], int nscenes)
 {
   int i, j, k;
 
-  /* Fill the ncenes matrixes with blaks. */
+  /* Fill the ncenes matrixes with blanks. */
   
   for (k=0; k<nscenes; k++)
     for (i=0; i<NROWS; i++)
@@ -116,12 +135,7 @@ void clearscene (char scene[][NROWS][NCOLS], int nscenes)
   
  }
 
-/* Load all scenes from dir into the scene vector. 
-
-   The scene vector is an array of nscenes matrixes of
-   NROWS x NCOLS chars, containg the ascii image.
-
-*/
+/* Load nscenes scenes from path/dir into the scene vector. */
 
 void readscenes (char *path, char *dir, char scene[][NROWS][NCOLS], int nscenes)
 {
@@ -135,13 +149,10 @@ void readscenes (char *path, char *dir, char scene[][NROWS][NCOLS], int nscenes)
   for (k=0; k<nscenes; k++)
     {
 
-      /* Program always read scenes from the installed data path (DATADIR, e.g.
-	 /usr/share/<dir>. Therefore, if scenes are modified, they should be
-	 reinstalle (program won't read them from project tree.)  */
       
       sprintf (scenefile, "%s/%s/scene-%07d.txt", path, dir, k+1);
 
-            file = fopen (scenefile, "r");
+      file = fopen (scenefile, "r");
       sysfatal (!file);
 
       /* Iterate through NROWS. */
@@ -149,14 +160,14 @@ void readscenes (char *path, char *dir, char scene[][NROWS][NCOLS], int nscenes)
       for (i=0; i<NROWS; i++)
       	{
 
-	  /* Read NCOLS columns from row i.*/
+	  /* For each row read NCOLS columns.*/
 	  
       	  for (j=0; j<NCOLS; j++)
 	    {
 
 	      /* Actual ascii text file may be smaller than NROWS x NCOLS.
 		 If we read something out of the 32-127 ascii range,
-		 consider a blank instead.*/
+		 consider a blank instead (e.g. get rid of trailing \n)*/
 	      
 	      c = (char) fgetc (file);
 	      scene[k][i][j] = ((c>=' ') && (c<='~')) ? c : BLANK;
@@ -175,11 +186,11 @@ void readscenes (char *path, char *dir, char scene[][NROWS][NCOLS], int nscenes)
   
 }
 
-/* Draw a the given scene on the screen. Currently, this iterates through the
-   scene matrix outputig each caracter by means of indivudal puchar calls. One
-   may want to try a different approach which favour performance. For instance,
-   issuing a single 'write' call for each line. Would this yield any significant
-   performance improvement? */
+/* Draw the given scene on the screen. The function iterates through the
+   scene matrix outputting character by character. 
+
+   Note: the implementation make repeated calls to putchar(). Are there 
+   more efficient alternatives ? */
 
 void draw (char scene[][NROWS][NCOLS], int number)
 {
@@ -196,7 +207,7 @@ void draw (char scene[][NROWS][NCOLS], int number)
 }
 
 /* Draw scene indexed by number, get some statics and repeat. 
-   If meny is true, draw the game controls.*/
+   If menu is true, draw the game controls.*/
 
 void showscene (char scene[][NROWS][NCOLS], int number, int menu)
 {
@@ -225,7 +236,7 @@ void showscene (char scene[][NROWS][NCOLS], int number, int menu)
 }
 
 
-  /* Instantiate the nake and a set of energy blocks. */
+  /* Instantiate the snake and a set of energy blocks. */
 
 #define BLOCK_INACTIVE -1;
 
@@ -246,8 +257,8 @@ void init_game ()
   
 }
 
-/* This functions adances the game. It computes the next state
-   and updates the scene vector. This is Tron's game logic. */
+/* This functions advances the game: it computes the next state
+   and updates the scene vector. This is the game logic. */
 
 void advance (char scene[][NROWS][NCOLS])
 {
@@ -398,9 +409,6 @@ int main (int argc, char **argv)
 
 #define scene_path_intro DATADIR "/" PACKAGE_TARNAME
   
-  /* readscenes (SCENE_DIR_INTRO, intro_scene, N_INTRO_SCENES); */
-  
-  /* readscenes (scene_path_intro, intro_scene, N_INTRO_SCENES); */
 
   readscenes (custom_data_path, "intro", intro_scene, N_INTRO_SCENES);
 
