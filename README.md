@@ -5,7 +5,16 @@ arcades of the 80s. It was meant to be developed as a collaborative
 programming exercise in a course on Open Source Systems taught to
 undergraduate CS students.
 
+
+
+
 ## Quick start
+
+ If you have nix installed, you can just:
+
+ ```bash
+ $ nix run github:courselab/snaskii22
+ ```
 
  If you have obtained the project source from the __version control repository__,
 
