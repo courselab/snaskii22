@@ -1,15 +1,14 @@
 { pkgs ? import <nixpkgs> {} }:
 
-with pkgs;
 
-mkShell {
-  nativeBuildInputs = [
-    ncurses5
-  ];
-  buildInputs = [
+pkgs.mkShell {
+
+  buildInputs = with pkgs; [
+    ncurses
     gcc
     automake
     autoconf
     libtool
   ];
+
 }
