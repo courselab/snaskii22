@@ -50,17 +50,17 @@ snaskii : snaskii.sh
 # This install snaskii.bin and rename it snaskii.
 
 install-exec-hook: 
-	cd $(DESTDIR)/$(bindir) && mv ttsnake.bin ttsnake
+	cd $(DESTDIR)/$(bindir) && mv $(bin_PROGRAMS) $(bin_SCRIPTS)
 
 # This uninstall the binary
 
 uninstall-hook:
-	rm -f $(DESTDIR)/$(bindir)/snaskii
+	rm -f $(DESTDIR)/$(bindir)/$(bin_SCRIPTS)
 
 # This removes the wrapper script.
 
 clean-local:
-	rm -f snaskii
+	rm -f $(bin_SCRIPTS)
 
 
 
