@@ -53,6 +53,8 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define N_INTRO_SCENES 485 /* Number of frames of the intro animation.*/
 #define N_GAME_SCENES 1    /* Number of frames of the gamepay scnene. */
 
+#define MAX_DELAY 999999 /* Maximum possible delay. */
+
 #define NCOLS 90 /* Number of columns of the scene. */
 #define NROWS 40 /* Number of rows of the scene. */
 
@@ -288,6 +290,7 @@ void *userinput() {
                 break;
             case '-': /* Decrease FPS. */
                 game_delay = game_delay * (1.1);
+                if(game_delay > MAX_DELAY) game_delay = MAX_DELAY;
                 break;
             case 'q':
                 kill(0, SIGINT); /* Quit. */
