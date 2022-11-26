@@ -21,15 +21,4 @@ stdenv.mkDerivation rec {
     autoreconf --install
   '';
 
-  installPhase = ''
-    mkdir -p $out/bin
-    chmod -R u+x $out
-
-    cp src/snaskii $out/bin
-    cp src/snaskii.bin $out/bin
-    cp -r scenes $out
-    chmod -R u+x $out/bin
-
-  '';
-
 }
