@@ -1,8 +1,8 @@
 /*
-	utils.h - Some handy tools.
+	scene.h - Scene type and functions to manipulate it.
 	Copyright (c) 2021 - Monaco F. J. <monaco@usp.br>
 
-	This file is part of Real-Time Sand Box - Snaskii
+	This file is part of Snaskii
 
 	Snaskii is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,23 +19,33 @@
 */
 
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef SCENE_H
+#define SCENE_H
 
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "times.h"
 
 
-// Report a system error and exit
-#define sysfatal(expression)																\
-	if ((expression))																		\
-	{																						\
-		fprintf(stderr, "%s: %d: %s: %s\n", __FILE__, __LINE__, __func__, strerror(errno));	\
-		exit(EXIT_FAILURE);																	\
-	}
+#define SCENE_ROWS    40
+#define SCENE_COLUMNS 90
+
+#define BLANK ' '
 
 
-#endif // UTILS_H
+typedef char scene_t[SCENE_ROWS][SCENE_COLUMNS];
+
+
+// Set every character in every scene to BLANK
+void clear_scenes(scene_t scenes[], int size);
+
+// Load the scenes from path/directory to the array
+void load_scenes(scene_t scenes[], int size, const char* path, const char* directory);
+
+// Draw the scene matrix in the console
+void draw_scene(const scene_t scene);
+
+// Draw the menu with fps and controls information
+void draw_menu(const times_t* times);
+
+
+#endif // SCENE_H

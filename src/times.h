@@ -1,8 +1,8 @@
 /*
-	utils.h - Some handy tools.
+	times.h - Struct to group time information and functions to manipulate it.
 	Copyright (c) 2021 - Monaco F. J. <monaco@usp.br>
 
-	This file is part of Real-Time Sand Box - Snaskii
+	This file is part of Snaskii
 
 	Snaskii is free software: you can redistribute it and/or modify
 	it under the terms of the GNU General Public License as published by
@@ -19,23 +19,29 @@
 */
 
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef TIMES_H
+#define TIMES_H
 
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <sys/time.h>
 
 
-// Report a system error and exit
-#define sysfatal(expression)																\
-	if ((expression))																		\
-	{																						\
-		fprintf(stderr, "%s: %d: %s: %s\n", __FILE__, __LINE__, __func__, strerror(errno));	\
-		exit(EXIT_FAILURE);																	\
-	}
+typedef struct Times
+{
+	struct timeval now;
+	struct timeval start;
+	struct timeval last_frame;
+	struct timeval elapsed_start;
+	struct timeval elapsed_last_frame;
+}
+times_t;
 
 
-#endif // UTILS_H
+// Init the time information with current time
+void init_times(times_t* times);
+
+// Update the time information stored
+void update_times(times_t* times);
+
+
+#endif // TIMES_H

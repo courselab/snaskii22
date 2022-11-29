@@ -1,436 +1,273 @@
-/* snaskii.c - A very simple ASCII snake game.
+/*
+	snaskii.c - A very simple ASCII snake game.
+	Copyright (c) 2021 - Monaco F. J. <monaco@usp.br>
 
-   Copyright (c) 2021 - Monaco F. J. <monaco@usp.br>
+	This file is part of Snaskii
 
-   This file is part of Snaskii
+	Snaskii is free software: you can redistribute it and/or modify
+	it under the terms of the GNU General Public License as published by
+	the Free Software Foundation, either version 3 of the License, or
+	(at your option) any later version.
 
-   Snaskii is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-   
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-   
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.
+	This program is distributed in the hope that it will be useful,
+	but WITHOUT ANY WARRANTY; without even the implied warranty of
+	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	GNU General Public License for more details.
+
+	You should have received a copy of the GNU General Public License
+	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-/* POSIX C libraries. */
 
-#include <stdlib.h>
-#include <stdio.h>
-#include <unistd.h>
-#include <time.h>
-#include <sys/time.h>
-#include <signal.h>
-#include <pthread.h>
+/*
+	We use ncurses library, a CRT screen handling and optimization package.
+	It implements wrapper over terminal capabilities and provides handy
+	functions to draw characters at arbitrary positions on the screen,
+	clear the terminal etc.
 
-/* Autoconf tests. */
-
-#include <config.h>
-
-/* We use ncurses library, a CRT screen handling and optimization package. 
-   It implements wrapper over terminal capabilities and provides handy
-   functions to draw characters at arbitrary positions on the screen,
-   clear the terminal etc.
-
-   See https://tldp.org/HOWTO/NCURSES-Programming-HOWTO.
-
+	See https://tldp.org/HOWTO/NCURSES-Programming-HOWTO.
 */
-
 #include <ncurses.h>
 
-/* This header contains some handy functions. */
+// Autoconf tests
+#include <config.h>
 
+#include <time.h>
+#include <stdio.h>
+#include <getopt.h>
+#include <signal.h>
+#include <stdlib.h>
+#include <string.h>
+#include <unistd.h>
+#include <pthread.h>
+#include <stdbool.h>
+#include <sys/time.h>
+
+#include "movie.h"
+#include "scene.h"
+#include "times.h"
 #include "utils.h"
 
-/* Game defaults */
 
-#define N_INTRO_SCENES 485	/* Number of frames of the intro animation.*/
-#define N_GAME_SCENES  1	/* Number of frames of the gamepay scnene. */
+#define GAME_SCENES_SIZE 1
+#define GAME_DIRECTORY "game"
+#define GAME_DELAY (1e6 / 4) // 4us per frame
 
-#define NCOLS 90		/* Number of columns of the scene. */
-#define NROWS 40		/* Number of rows of the scene. */
+#define SNAKE_BODY 'O'
+#define SNAKE_BODY_SIZE ROWS * COLUMNS
 
-#define BLANK ' '		/* Blank-screen character. */
+#define ENERGY_BLOCK '+'
+#define INACTIVE_BLOCK -1
+#define ENERGY_BLOCKS_SIZE 5
 
-#define BUFFSIZE 1024		/* Generic, auxilary buffer size. */
-#define SCENE_DIR_INTRO "intro" /* Directory with the intro animation scenes. */
-#define SCENE_DIR_GAME  "game"	/* Directory with the game animation scene. */
+#define USAGE                                \
+	"snaskii [options]                 \n\n" \
+	"    options:                      \n\n" \
+	"    -h         this help message    \n" \
+	"    -d <path>  path to data files   \n"
 
-#define SNAKE_BODY       "O"     /* Character to draw the snake. */
-#define ENERGY_BLOCK     "+"	 /* Character to draw the energy block. */
-
-#define MAX_ENERGY_BLOCKS 5	/* Maximum number of energy blocks. */
-
-/* Global variables.*/
-
-struct timeval beginning,	/* Time when game started. */
-  now,				/* Time now. */
-  before,			/* Time in the last frame. */
-  elapsed_last,			/* Elapsed time since last frame. */
-  elapsed_total;		/* Elapsed time since game baginning. */
+#ifndef DATADIR
+	// Remove the undefined DATADIR error, but this should be set with the -D compilation flag
+	#define DATADIR "."
+#endif
 
 
-int movie_delay;		/* How long between move scenes scenes. */
-int game_delay;			/* How long between game scenes. */
-int go_on;			/* Whether to continue or to exit main loop.*/
-
-/* SIGINT handler. 
-
-   This function is called asynchronously when the user press Ctr-C.  */
-
-void quit ()
+typedef enum Direction
 {
-  go_on=0;			/* Sentinel controlling the main loop.*/
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
+}
+direction_t;
+
+typedef struct Coord
+{
+	int x;
+	int y;
+}
+coord_t;
+
+typedef struct Snake
+{
+	int length;
+	coord_t head;
+	direction_t direction;
+}
+snake_t;
+
+
+// Global variables
+
+bool playing_game = true;
+int game_delay = GAME_DELAY;
+
+
+void quit()
+{
+	skip_movie();
+	playing_game = false;
 }
 
-/* The snake data structrue. */
 
-typedef enum {up, right, left, down} direction_t; 
-
-typedef struct snake_st snake_t;
-
-struct snake_st
+void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
 {
-  struct
-  {
-    int x;                       /* Coordinate x of the snake's head. */
-    int y;			 /* Coordinate y of the snake's head. */
-  } head;			 /* The snake's head. */
-  int length;			 /* The snake length (including head). */
-  direction_t direction;	 /* Moviment direction. */
-};
+	snake->length = 1;
+	snake->direction = RIGHT;
 
-snake_t snake;			/* The snake instance. */
+	snake->head.x = 0;
+	snake->head.y = 0;
 
-/* Energy blocks. */
-
-struct
-{
-  int x;			/* Coordinate x of the energy block. */
-  int y;			/* Coordinate y of the energy block. */
-} energy_block[MAX_ENERGY_BLOCKS]; /* Array of energy blocks. */
-  
-
-/* Clear the scene vector. 
-
-   The scene vector is an array of nscenes scenes. Each scene is a matrix of
-   (NROWS x NCOLS) chars, representing and image in ASCII.
-*/
-
-void clearscene (char scene[][NROWS][NCOLS], int nscenes)
-{
-  int i, j, k;
-
-  /* Fill the ncenes matrixes with blanks. */
-  
-  for (k=0; k<nscenes; k++)
-    for (i=0; i<NROWS; i++)
-      for (j=0; j<NCOLS; j++)
-	scene[k][i][j] = BLANK;
-  
- }
-
-/* Load nscenes scenes from path/dir into the scene vector. */
-
-void readscenes (char *path, char *dir, char scene[][NROWS][NCOLS], int nscenes)
-{
-  int i, j, k;
-  FILE *file;
-  char scenefile[1024], c;
-  
-  /* Read nscenes. */
-  
-  i=0;
-  for (k=0; k<nscenes; k++)
-    {
-
-      
-      sprintf (scenefile, "%s/%s/scene-%07d.txt", path, dir, k+1);
-
-      file = fopen (scenefile, "r");
-      sysfatal (!file);
-
-      /* Iterate through NROWS. */
-      
-      for (i=0; i<NROWS; i++)
-      	{
-
-	  /* For each row read NCOLS columns.*/
-	  
-      	  for (j=0; j<NCOLS; j++)
-	    {
-
-	      /* Actual ascii text file may be smaller than NROWS x NCOLS.
-		 If we read something out of the 32-127 ascii range,
-		 consider a blank instead (e.g. get rid of trailing \n)*/
-	      
-	      c = (char) fgetc (file);
-	      scene[k][i][j] = ((c>=' ') && (c<='~')) ? c : BLANK;
-	    }
-
-	  
-	  /* Discard the rest of the line (if longer than NCOLS). */
-	  
-      	  while (((c = fgetc(file)) != '\n') && (c != EOF));
-	  
-      	}
-
-      fclose (file);
-     
-    }
-  
+	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
-/* Draw the given scene on the screen. The function iterates through the
-   scene matrix outputting character by character. 
-
-   Note: the implementation make repeated calls to putchar(). Are there 
-   more efficient alternatives ? */
-
-void draw (char scene[][NROWS][NCOLS], int number)
+void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 {
-  int i, j;
-  for (i=0; i<NROWS; i++)
-    {
-      for (j=0; j<NCOLS; j++)
+	int scene = 0;
+
+	struct timespec request;
+	request.tv_sec = 0;
+
+	while (playing_game)
 	{
-	  putchar (scene[number][i][j]);
+		update_times(times);
+
+		// TODO: Advance game
+
+		// Draw the current scene frame
+		clear();
+		draw_scene(scenes[scene]);
+		draw_menu(times);
+		refresh();
+
+		scene = (scene + 1) % GAME_SCENES_SIZE;
+
+		// Wait until the next frame
+		request.tv_nsec = game_delay * 1e3;
+		nanosleep(&request, NULL);
 	}
-      putchar ('\n');
-      putchar ('\r');
-    }
-}
-
-/* Draw scene indexed by number, get some statics and repeat. 
-   If menu is true, draw the game controls.*/
-
-void showscene (char scene[][NROWS][NCOLS], int number, int menu)
-{
-  double fps;
-
-  /* Draw the scene. */
-  
-  draw (scene, number);
-
-  memcpy (&before, &now, sizeof (struct timeval)); 
-  gettimeofday (&now, NULL);
-
-  timeval_subtract (&elapsed_last, &now, &before);
-
-  timeval_subtract (&elapsed_total, &now, &beginning);
-
-
-  fps = 1 / (elapsed_last.tv_sec + (elapsed_last.tv_usec * 1E-6));
-  
-  if (menu)
-    {
-      printf ("Elapsed: %5ds, fps=%5.2f\r\n", /* CR-LF because of ncurses. */
-	      (int) elapsed_total.tv_sec, fps);
-      printf ("Controls: \r\n");
-    }
 }
 
 
-  /* Instantiate the snake and a set of energy blocks. */
-
-#define BLOCK_INACTIVE -1;
-
-void init_game ()
+void* get_inputs()
 {
-  int i;
-  
-  snake.head.x = 0;
-  snake.head.y = 0;
-  snake.direction = right;
-  snake.length = 1;
+	// TODO: Discuss the possibility of a independent event system
+	// TODO: Add snake controls
 
-  for (i=0; i<MAX_ENERGY_BLOCKS; i++)
-    {
-      energy_block[i].x = BLOCK_INACTIVE;
-      energy_block[i].y = BLOCK_INACTIVE;
-    }
-  
-}
-
-/* This functions advances the game: it computes the next state
-   and updates the scene vector. This is the game logic. */
-
-void advance (char scene[][NROWS][NCOLS])
-{
-  scene[0][0][0] += 0; 		/* Does nothing, for now. */
-}
-
-/* This function plays the game introduction animation. */
-
-void playmovie (char scene[N_INTRO_SCENES][NROWS][NCOLS])
-{
-
-  int k = 0, i;
-  struct timespec how_long;
-  how_long.tv_sec = 0;
-
-  for (i=0; (i < N_INTRO_SCENES) && (go_on); i++)
-    {
-      clear ();			               /* Clear screen.    */
-      refresh ();			       /* Refresh screen.  */
-      showscene (scene, k, 0);                 /* Show k-th scene .*/
-      k = (k + 1) % N_INTRO_SCENES;            /* Circular buffer. */
-      how_long.tv_nsec = (movie_delay) * 1e3;  /* Compute delay. */
-      nanosleep (&how_long, NULL);	       /* Apply delay. */
-    }
-
-}
-
-
-/* This function implements the gameplay loop. */
-
-void playgame (char scene[N_GAME_SCENES][NROWS][NCOLS])
-{
-
-  int k = 0;
-  struct timespec how_long;
-  how_long.tv_sec = 0;
-
-  /* User may change delay (game speedy) asynchronously. */
-  
-  while (go_on)
-    {
-      clear ();                               /* Clear screen. */
-      refresh ();			      /* Refresh screen. */
-      
-      advance (scene);		               /* Advance game.*/
-      
-      showscene (scene, k, 1);                /* Show k-th scene. */
-      k = (k + 1) % N_GAME_SCENES;	      /* Circular buffer. */
-      how_long.tv_nsec = (game_delay) * 1e3;  /* Compute delay. */
-      nanosleep (&how_long, NULL);	      /* Apply delay. */
-    }
-
-}
-
-
-/* Process user input. 
-   This function runs in a separate thread. */
-
-void * userinput ()
-{
-  int c;
-  while (1)
-    {
-      c = getchar();
-      switch (c)
-      {
-      case '+':			/* Increase FPS. */
-	game_delay = game_delay * (0.9) ;
-	break;
-      case '-':			/* Decrease FPS. */
-	game_delay = game_delay * (1.1) ;
-	break;
-      case 'q':
-	kill (0, SIGINT);	/* Quit. */
-	break;
-      default:
-	break;
-      }
-
-    }
-  
-}
-
-#define USAGE \
-  "snaskii [options]\n\n"\
-  "   options\n\n"\
-  "   -h         this help message\n"\
-  "   -d <path>  path to data files\n"      
-
-/* The main function. */
-
-int main (int argc, char **argv)
-{
-  int rs, opt;
-  struct sigaction act;		
-  pthread_t pthread;
-  char intro_scene[N_INTRO_SCENES][NROWS][NCOLS];
-  char game_scene[N_GAME_SCENES][NROWS][NCOLS];
-  char *custom_data_path = DATADIR "/" PACKAGE_TARNAME;
-  
-  /* Process command-line options. */
-
-  while ((opt = getopt (argc, argv, "hd:")) != -1)
-    {
-      switch (opt)
+	while (playing_game)
 	{
-	case 'h':
-	  printf (USAGE);
-	  exit (0);
-	case 'd':
-	  custom_data_path = strdup (optarg);
-	  break;
-	default:
-	  fprintf (stderr, USAGE);
-	  exit (1);
+		int input = getch();
+
+		switch (input)
+		{
+			case '+': // Increase FPS
+				game_delay = game_delay * (0.9);
+				break;
+
+			case '-': // Decrease FPS
+				game_delay = game_delay * (1.1);
+				break;
+
+			case 'q':
+				quit();
+				break;
+
+			case ' ':
+				skip_movie();
+				break;
+		}
 	}
-    }
 
-  /* Handle SIGNINT (loop control flag). */
-  
-  sigaction(SIGINT, NULL, &act);
-  act.sa_handler = quit;
-  sigaction(SIGINT, &act, NULL);
-  
-  /* Ncurses initialization. */
-
-  initscr();
-  noecho();
-  curs_set(FALSE);
-  cbreak();
-
-  /* Default values. */
-
-  movie_delay = 1E5 / 4;	  /* Movie frame duration in usec (40usec) */
-  game_delay  = 1E6 / 4;	  /* Game frame duration in usec (4usec) */
+	return NULL;
+}
 
 
-  /* Handle game controls in a different thread. */
-  
-  rs = pthread_create (&pthread, NULL, userinput, NULL);
-  sysfatal (rs);
+int main(int argc, char** argv)
+{
+	char* data_path = malloc((strlen(DATADIR) + strlen(PACKAGE_TARNAME) + 2) * sizeof(char));
+	sprintf(data_path, "%s/%s", DATADIR, PACKAGE_TARNAME);
 
 
-  /* Play intro. */
+	// Process command-line options
 
-  clearscene(intro_scene, N_INTRO_SCENES);
+	int option;
+
+	while ((option = getopt(argc, argv, "hd:")) != -1)
+	{
+		switch (option)
+		{
+			case 'h':
+				puts(USAGE);
+				exit(EXIT_SUCCESS);
+
+			case 'd':
+				data_path = strdup(optarg);
+				break;
+
+			default:
+				fputs(USAGE, stderr);
+				exit(EXIT_FAILURE);
+		}
+	}
 
 
-#define scene_path_intro DATADIR "/" PACKAGE_TARNAME
-  
+	// Handle SIGINT (Ctrl + C) to quit
 
-  readscenes (custom_data_path, "intro", intro_scene, N_INTRO_SCENES);
+	struct sigaction action;
+	sigaction(SIGINT, NULL, &action);
 
-  go_on=1;			/* User may skip intro (q). */
+	action.sa_handler = quit;
+	sigaction(SIGINT, &action, NULL);
 
-  playmovie (intro_scene);
 
-  /* Play game. */
-  
-  clearscene(intro_scene, N_GAME_SCENES);
-  
-  readscenes (custom_data_path, "game", game_scene, N_GAME_SCENES);
+	// Ncurses initialization
 
-  go_on=1;
-  gettimeofday (&beginning, NULL);
+	initscr();
+	noecho();
+	cbreak();
+	curs_set(FALSE);
 
-  init_game ();
-  
-  playgame (game_scene);
 
-  
-  endwin();
+	// Handle game controls in a different thread
 
-  return EXIT_SUCCESS;
+	pthread_t pthread;
+
+	int error = pthread_create(&pthread, NULL, get_inputs, NULL);
+	sysfatal(error);
+
+
+	// Play movie
+
+	scene_t movie_scenes[MOVIE_SCENES_SIZE];
+	clear_scenes(movie_scenes, MOVIE_SCENES_SIZE);
+	load_scenes(movie_scenes, MOVIE_SCENES_SIZE, data_path, MOVIE_DIRECTORY);
+
+	play_movie(movie_scenes);
+
+
+	// Play game
+
+	snake_t snake;
+	times_t times;
+	coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
+
+	scene_t game_scenes[GAME_SCENES_SIZE];
+	clear_scenes(game_scenes, GAME_SCENES_SIZE);
+	load_scenes(game_scenes, GAME_SCENES_SIZE, data_path, GAME_DIRECTORY);
+
+	init_times(&times);
+	init_game(&snake, energy_blocks);
+
+	play_game(game_scenes, &times);
+
+
+	// Cleanup and exit
+
+	endwin();
+	free(data_path);
+
+	pthread_cancel(pthread);
+	pthread_join(pthread, NULL);
+
+	return EXIT_SUCCESS;
 }

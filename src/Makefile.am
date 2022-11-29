@@ -18,25 +18,25 @@
 ##   along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 AM_CPPFLAGS = @CPP_FLAGS@ -DDATADIR=\"@datarootdir@\" -DBINDIR=\"@bindir@\"
-AM_CFLAGS =   @C_FLAGS@ 
-AM_LDFLAGS =  @LD_FLAGS@   
+AM_CFLAGS =   @C_FLAGS@
+AM_LDFLAGS =  @LD_FLAGS@
 
 bin_PROGRAMS = snaskii.bin
 
-snaskii_bin_SOURCES = snaskii.c utils.c  utils.h 
+snaskii_bin_SOURCES = snaskii.c movie.c movie.h scene.c scene.h times.c times.h utils.h
 
 bin_SCRIPTS = snaskii
 
 snaskii_bin_CC = @PTHREAD_CC@
-snaskii_bin_CFLAGS = @PTHREAD_CFLAGS@ 
-snaskii_bin_LDADD = -lncurses $(LIBOBJS) @PTHREAD_LIBS@ 
+snaskii_bin_CFLAGS = @PTHREAD_CFLAGS@
+snaskii_bin_LDADD = -lncurses $(LIBOBJS) @PTHREAD_LIBS@
 
 ## This is a provision for build-time test.
 ##
 ## Briefly, the installed binary foo should read some installed data files.
 ## In order to be able to test the project without installing it, we want
 ## the non installed binary to read the non-installed data files, instead.
-## To that end, use a wrapper script foo.sh that evokes the real binary 
+## To that end, use a wrapper script foo.sh that evokes the real binary
 ## foo.bin with appropriate command-line options to overwrite the data file
 ## path. The installation procedure, then,copies foo.bin into the binary
 ## installation path and renames it to foo.
@@ -49,7 +49,7 @@ snaskii : snaskii.sh
 
 # This install snaskii.bin and rename it snaskii.
 
-install-exec-hook: 
+install-exec-hook:
 	cd $(DESTDIR)/$(bindir) && mv ttsnake.bin ttsnake
 
 # This uninstall the binary
