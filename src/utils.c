@@ -19,6 +19,7 @@
 */
 
 #include <sys/time.h>
+#include "utils.h"
 
 /* Subtract the ‘struct timeval’ values X and Y, storing the result in RESULT.
    Return 1 if the difference is negative, otherwise 0. 
@@ -50,3 +51,58 @@ timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
   /* Return 1 if result is negative. */
   return x->tv_sec < y->tv_sec;
 }
+
+/**
+ * The functions below allows to create simples, double linked
+ * lists, which can be used as queues.
+*/
+list_t *newlist(){
+    list_t *l;
+    l = (list_t*) malloc(sizeof(list_t));
+    l->head = NULL;
+    l->tail = NULL;
+    point_t snakehead;
+    snakehead.type = 'O';
+    snakehead.x = 0;
+    snakehead.y = 0;
+    insert(l, snakehead);
+    return l;
+}
+
+void insert(list_t* l, point_t p) {
+
+    node_t *new = (node_t *)malloc(sizeof(node_t)); 
+    new->next = NULL;
+    new->p = p;
+
+    //first node of the list
+    if(l->head == NULL){
+        new->prev = NULL;
+        l->head = new;
+    }else{
+        new->prev = l->tail;
+        l->tail->next = new;
+    }
+
+    l->tail = new;
+}
+
+void pop(list_t *l){
+    node_t *node = l->head;
+    l->head = l->head->next;
+    free(node);
+}
+
+void freeList(list_t *l) {
+	if(l != NULL) {
+		node_t *aux = l->head;
+		while(aux != NULL) {
+			l->head = aux->next;
+			free(aux);
+			aux = l->head;
+		}
+		free(l);
+	}
+}
+
+

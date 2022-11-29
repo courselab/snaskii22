@@ -42,4 +42,33 @@
 int
 timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y);
 
+/** Linked list related structures */
+
+typedef struct point_st{
+    int x, y;
+    char type;
+}point_t;
+
+typedef struct node_st{
+    point_t p;
+    struct NODE *next, *prev;
+} node_t;
+
+typedef struct list_st{
+    node_t *head;
+    node_t *tail;
+}list_t;
+
+/** @brief creates a new Linked list */
+list_t *newlist();
+
+/** @brief Insert a new element in the tail of the list */
+void insert(list_t* l, point_t newItem);
+
+/** @brief Remove an element from the beginning of the list */
+void pop(list_t* l);
+
+/** @brief Free the entire linked list */
+void freelist(list_t* l);
+
 #endif /* UTILS_H */
