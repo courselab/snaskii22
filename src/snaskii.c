@@ -77,13 +77,10 @@ typedef struct snake_st snake_t;
 
 struct snake_st
 {
-  struct
-  {
-    int x;                       /* Coordinate x of the snake's head. */
-    int y;			 /* Coordinate y of the snake's head. */
-  } head;			 /* The snake's head. */
-  int length;			 /* The snake length (including head). */
-  direction_t direction;	 /* Moviment direction. */
+    list_t *snakebody;      /* The queue st will represent the snake body*/
+    int length;            /* The snake length (including head). */
+    // ! Use lenght to track snake size !
+    direction_t direction; /* Moviment direction. */
 };
 
 snake_t snake;			/* The snake istance. */
@@ -233,8 +230,7 @@ void init_game ()
 {
   int i;
   
-  snake.head.x = 0;
-  snake.head.y = 0;
+  snake.snakebody = newlist();
   snake.direction = right;
   snake.length = 1;
 
