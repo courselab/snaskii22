@@ -84,7 +84,7 @@ and the data files in `/tmp/share`.
 ## EXECUTION
 
 ```
- Usage:  snaski [options]
+ Usage:  snaskii [options]
 
          Options
          
