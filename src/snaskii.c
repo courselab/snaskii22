@@ -193,7 +193,7 @@ void draw (char scene[][NROWS][NCOLS], int number)
 }
 
 /* Draw scene indexed by number, get some statics and repeat. 
-   If meny is true, draw the game controls.*/
+   If menu is true, draw the game controls.*/
 
 void showscene (char scene[][NROWS][NCOLS], int number, int menu)
 {
