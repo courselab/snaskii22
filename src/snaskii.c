@@ -247,6 +247,35 @@ void init_game ()
 
 void advance (char scene[][NROWS][NCOLS])
 {
+  int _x, _y; //vectorial representation of the snake movement
+  switch (snake.direction)
+  {
+  case up:
+      _x = 0; _y = -1; // y-axis is inverted
+    break;
+  case left:
+      _x = -1; _y = 0; 
+    break;
+  case down:
+      _x = 0; _y = 1; 
+    break;
+  case up:
+      _x = 1; _y = 0;
+    break;
+  default:
+    break;
+  }
+  point_t *headpoint = snake->snakebody.head.point;
+  //apply the _x and _y to the head point
+  headpoint.x += _x;
+  headpoint.y += _y;
+  insert(snake->snakebody, headpoint);
+  
+  //if(!(_x == foodx && _y == foody))
+  //  pop(snake->snakebody);
+
+  pop(snake->snakebody);
+  
   scene[0][0][0] += 0; 		/* Does nothing, for now. */
 }
 
