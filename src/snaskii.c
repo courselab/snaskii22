@@ -316,6 +316,22 @@ void * userinput ()
       case '-':			/* Decrease FPS. */
 	game_delay = game_delay * (1.1) ;
 	break;
+      case 'w':
+        if (snake.direction != down)
+          snake.direction = up;
+  break;
+      case 'a':
+        if (snake.direction != right)
+          snake.direction = left;
+  break;
+      case 's':
+        if (snake.direction != up)
+          snake.direction = down;
+  break;
+      case 'd':
+        if (snake.direction != left)
+          snake.direction = right;
+  break;
       case 'q':
 	kill (0, SIGINT);	/* Quit. */
 	break;
