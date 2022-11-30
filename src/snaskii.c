@@ -54,7 +54,6 @@
 #define GAME_DELAY (1e6 / 4) // 4us per frame
 
 #define SNAKE_BODY 'O'
-#define SNAKE_BODY_SIZE ROWS * COLUMNS
 
 #define ENERGY_BLOCK '+'
 #define INACTIVE_BLOCK -1
