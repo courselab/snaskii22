@@ -217,8 +217,24 @@ void showscene(char scene[][NROWS][NCOLS], int number, int menu) {
 
 #define BLOCK_INACTIVE -1;
 
+// Read sizeof(unsigned int) bytes from /dev/urandom
+unsigned int generate_seed() {
+	FILE *urandom = fopen("/dev/urandom", "r");
+	if (urandom == NULL) { // If we can't open /dev/urandom, use time
+		return time(NULL);
+	}
+	unsigned int seed;
+	fread(&seed, sizeof(unsigned int), 1, urandom);
+	fclose(urandom);
+	return seed;
+}
+
 void init_game() {
     int i;
+
+	// Seed the random number generator for energy blocks
+	unsigned int seed = generate_seed();
+	srand(seed);
 
     snake.head.x = 0;
     snake.head.y = 0;
