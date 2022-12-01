@@ -354,7 +354,7 @@ int main(int argc, char **argv) {
     /* Default values. */
 
     movie_delay = 1E5 / 4; /* Movie frame duration in usec (40usec) */
-    game_delay = 1E6 / 4;  /* Game frame duration in usec (4usec) */
+    game_delay = 1E6 / 30;  /* Game frame duration in usec (4usec) */
 
     /* Handle game controls in a different thread. */
 
