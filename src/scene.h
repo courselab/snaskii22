@@ -25,15 +25,9 @@
 
 
 #include "times.h"
+#include "graphics.h"
 
-
-#define SCENE_ROWS    40
-#define SCENE_COLUMNS 90
-
-#define BLANK ' '
-
-
-typedef char scene_t[SCENE_ROWS][SCENE_COLUMNS];
+typedef char scene_t[SCREEN_ROWS][SCREEN_COLUMNS];
 
 
 // Set every character in every scene to BLANK

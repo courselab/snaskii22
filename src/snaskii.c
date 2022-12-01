@@ -19,17 +19,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-/*
-	We use ncurses library, a CRT screen handling and optimization package.
-	It implements wrapper over terminal capabilities and provides handy
-	functions to draw characters at arbitrary positions on the screen,
-	clear the terminal etc.
-
-	See https://tldp.org/HOWTO/NCURSES-Programming-HOWTO.
-*/
-#include <ncurses.h>
-
 // Autoconf tests
 #include <config.h>
 
@@ -48,6 +37,7 @@
 #include "scene.h"
 #include "times.h"
 #include "utils.h"
+#include "graphics.h"
 
 
 #define MAX_DELAY 999999
@@ -138,10 +128,10 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 		// TODO: Advance game
 
 		// Draw the current scene frame
-		clear();
-		draw_scene(scenes[scene]);
+		draw_background((char**)scenes[scene]);
+		screen_show();
+
 		draw_menu(times);
-		refresh();
 
 		scene = (scene + 1) % GAME_SCENES_SIZE;
 
@@ -228,13 +218,7 @@ int main(int argc, char** argv)
 	sigaction(SIGINT, &action, NULL);
 
 
-	// Ncurses initialization
-
-	initscr();
-	noecho();
-	cbreak();
-	curs_set(FALSE);
-
+	screen_init();
 
 	// Handle game controls in a different thread
 
@@ -271,7 +255,7 @@ int main(int argc, char** argv)
 
 	// Cleanup and exit
 
-	endwin();
+	screen_end();
 	free(data_path);
 
 	pthread_cancel(pthread);

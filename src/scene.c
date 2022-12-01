@@ -22,11 +22,11 @@
 
 #include <stdio.h>
 #include <string.h>
-#include <ncurses.h>
 
 #include "scene.h"
 #include "times.h"
 #include "utils.h"
+#include "graphics.h"
 
 
 #define FILE_NAME_SIZE 1024
@@ -34,7 +34,7 @@
 
 void clear_scenes(scene_t scenes[], int size)
 {
-	memset(scenes, BLANK, size * SCENE_ROWS * SCENE_COLUMNS * sizeof(char));
+	memset(scenes, BLANK, size * SCREEN_ROWS * SCREEN_COLUMNS * sizeof(char));
 }
 
 void load_scenes(scene_t scenes[], int size, const char* path, const char* directory)
@@ -47,9 +47,9 @@ void load_scenes(scene_t scenes[], int size, const char* path, const char* direc
 		FILE* file = fopen(file_name, "r");
 		sysfatal(!file);
 
-		for (int i = 0; i < SCENE_ROWS; i++)
+		for (int i = 0; i < SCREEN_ROWS; i++)
 		{
-			for (int j = 0; j < SCENE_COLUMNS; j++)
+			for (int j = 0; j < SCREEN_COLUMNS; j++)
 			{
 				/*
 					Actual ascii text file may be smaller than SCENE_ROWS x SCENE_COLUMNS
@@ -71,26 +71,11 @@ void load_scenes(scene_t scenes[], int size, const char* path, const char* direc
 	}
 }
 
-void draw_scene(const scene_t scene)
-{
-	// TODO: Review performance of using multiple addch()
-
-	for (int i = 0; i < SCENE_ROWS; i++)
-	{
-		for (int j = 0; j < SCENE_COLUMNS; j++)
-		{
-			addch(scene[i][j]);
-		}
-
-		addch('\n');
-	}
-}
-
 void draw_menu(const times_t* times)
 {
 	double fps = 1.0 / (times->elapsed_last_frame.tv_sec + times->elapsed_last_frame.tv_usec * 1E-6);
-	printw("Elapsed: %5ds, fps = %5.2f\n", (int)times->elapsed_start.tv_sec, fps);
+	screen_print("Elapsed: %5ds, fps = %5.2f\n", (int)times->elapsed_start.tv_sec, fps);
 
-	printw("Controls:\n");
+	screen_print("Controls:\n");
 	// TODO: Controls menu display
 }

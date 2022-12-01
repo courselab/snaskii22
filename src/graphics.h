@@ -19,43 +19,27 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 
-#include <time.h>
-#include <unistd.h>
-#include <stdbool.h>
+#define SCREEN_ROWS    40
+#define SCREEN_COLUMNS 90
 
-#include "movie.h"
-#include "scene.h"
-#include "graphics.h"
+#define BLANK ' '
 
+struct sprite {
+	int x_pos, y_pos;
+	char value;
+};
 
-#define MOVIE_DELAY (1e5 / 4) // 40us per frame
+void screen_init();
+void screen_clear();
+void screen_show();
+void screen_end();
 
-static bool playing_movie = true;
+void screen_print(char* format, ...);
 
+void draw_background(char** background);
+void draw_sprite(struct sprite* spr);
 
-void play_movie(scene_t scenes[MOVIE_SCENES_SIZE])
-{
-	int scene = 0;
-
-	struct timespec request;
-	request.tv_sec = 0;
-
-	for (int i = 0; i < MOVIE_SCENES_SIZE && playing_movie; i++)
-	{
-		// Draw the current movie frame
-		draw_background((char**)scenes[scene]);
-		screen_show();
-
-		scene = (scene + 1) % MOVIE_SCENES_SIZE;
-
-		// Wait until the next frame
-		request.tv_nsec = MOVIE_DELAY * 1e3;
-		nanosleep(&request, NULL);
-	}
-}
-
-void skip_movie()
-{
-	playing_movie = false;
-}
+#endif // GRAPHICS_H
