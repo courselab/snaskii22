@@ -51,7 +51,7 @@ typedef struct point_st{
 
 typedef struct node_st{
     point_t p;
-    struct NODE *next, *prev;
+    point_t *next, *prev;
 } node_t;
 
 typedef struct list_st{

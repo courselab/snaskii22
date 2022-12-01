@@ -55,6 +55,9 @@ timeval_subtract (struct timeval *result, struct timeval *x, struct timeval *y)
 /**
  * The functions below allows to create simples, double linked
  * lists, which can be used as queues.
+ * tail: begin of the list, tail of the snake
+ * head: end of the list, head of the snake
+ * format: tail -> ... -> head
 */
 list_t *newlist(){
     list_t *l;
@@ -75,31 +78,31 @@ void insert(list_t* l, point_t p) {
     new->next = NULL;
     new->p = p;
 
-    //first node of the list
-    if(l->head == NULL){
+    /* first node of the list */
+    if(l->tail == NULL){
         new->prev = NULL;
-        l->head = new;
+        l->tail = new;
     }else{
-        new->prev = l->tail;
-        l->tail->next = new;
+        new->prev = l->head;
+        l->head->next = new;
     }
 
-    l->tail = new;
+    l->head = new;
 }
 
 void pop(list_t *l){
-    node_t *node = l->head;
-    l->head = l->head->next;
+    node_t *node = l->tail;
+    l->tail = l->tail->next;
     free(node);
 }
 
 void freeList(list_t *l) {
 	if(l != NULL) {
-		node_t *aux = l->head;
+		node_t *aux = l->tail;
 		while(aux != NULL) {
-			l->head = aux->next;
+			l->tail = aux->next;
 			free(aux);
-			aux = l->head;
+			aux = l->tail;
 		}
 		free(l);
 	}
