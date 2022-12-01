@@ -305,7 +305,8 @@ void *userinput() {
     "snaskii [options]\n\n"             \
     "   options\n\n"                    \
     "   -h         this help message\n" \
-    "   -d <path>  path to data files\n"
+    "   -d <path>  path to data files\n"\
+    "   -s         skip intro scene\n"
 
 /* The main function. */
 
@@ -313,19 +314,23 @@ int main(int argc, char **argv) {
     int rs, opt;
     struct sigaction act;
     pthread_t pthread;
+    bool skip_intro_scene = false;
     char intro_scene[N_INTRO_SCENES][NROWS][NCOLS];
     char game_scene[N_GAME_SCENES][NROWS][NCOLS];
     char *custom_data_path = DATADIR "/" PACKAGE_TARNAME;
 
     /* Process command-line options. */
 
-    while ((opt = getopt(argc, argv, "hd:")) != -1) {
+    while ((opt = getopt(argc, argv, "hsd:")) != -1) {
         switch (opt) {
             case 'h':
                 printf(USAGE);
                 exit(0);
             case 'd':
                 custom_data_path = strdup(optarg);
+                break;
+            case 's':
+                skip_intro_scene = true;
                 break;
             default:
                 fprintf(stderr, USAGE);
@@ -356,8 +361,7 @@ int main(int argc, char **argv) {
     rs = pthread_create(&pthread, NULL, userinput, NULL);
     sysfatal(rs);
 
-    /* Play intro. */
-
+    /* Play intro. */    
     clearscene(intro_scene, N_INTRO_SCENES);
 
 #define scene_path_intro DATADIR "/" PACKAGE_TARNAME
@@ -365,6 +369,7 @@ int main(int argc, char **argv) {
     readscenes(custom_data_path, "intro", intro_scene, N_INTRO_SCENES);
 
     go_on = 1; /* User may skip intro (q). */
+    if (skip_intro_scene) go_on = 0;
 
     playmovie(intro_scene);
 
