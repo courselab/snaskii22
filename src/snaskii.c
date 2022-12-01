@@ -225,10 +225,10 @@ struct _energy_block spawn_energy_block() {
 
 #define BLOCK_INACTIVE -1;
 
-// Read sizeof(unsigned int) bytes from /dev/urandom
+/* Read sizeof(unsigned int) bytes from /dev/urandom */
 unsigned int generate_seed() {
 	FILE *urandom = fopen("/dev/urandom", "r");
-	if (urandom == NULL) { // If we can't open /dev/urandom, use time
+	if (urandom == NULL) { /* If we can't open /dev/urandom, use time */
 		return time(NULL);
 	}
 	unsigned int seed;
@@ -240,7 +240,7 @@ unsigned int generate_seed() {
 void init_game() {
     int i;
 
-	// Seed the random number generator for energy blocks
+	/* Seed the random number generator for energy blocks */
 	unsigned int seed = generate_seed();
 	srand(seed);
 
