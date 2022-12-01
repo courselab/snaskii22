@@ -108,7 +108,7 @@ snake_t snake; /* The snake instance. */
 
 /* Energy blocks. */
 
-struct {
+struct _energy_block {
     int x;                         /* Coordinate x of the energy block. */
     int y;                         /* Coordinate y of the energy block. */
 } energy_block[MAX_ENERGY_BLOCKS]; /* Array of energy blocks. */
@@ -215,6 +215,14 @@ void showscene(char scene[][NROWS][NCOLS], int number, int menu) {
 
 /* Instantiate the snake and a set of energy blocks. */
 
+
+struct _energy_block spawn_energy_block() {
+	struct _energy_block block;
+	block.x = rand() % NCOLS;
+	block.y = rand() % NROWS;
+	return block;
+}
+
 #define BLOCK_INACTIVE -1;
 
 // Read sizeof(unsigned int) bytes from /dev/urandom
@@ -242,8 +250,7 @@ void init_game() {
     snake.length = 1;
 
     for (i = 0; i < MAX_ENERGY_BLOCKS; i++) {
-        energy_block[i].x = BLOCK_INACTIVE;
-        energy_block[i].y = BLOCK_INACTIVE;
+        energy_block[i] = spawn_energy_block();
     }
 }
 
