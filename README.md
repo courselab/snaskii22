@@ -113,7 +113,7 @@ programming exercise you are invited to carry out.
 If you accept the challenge please, __do__ read the file
 
 ```
-doc/CONTRIBUTING.md
+docs/CONTRIBUTING.md
 ```
 
 which contains important information.
