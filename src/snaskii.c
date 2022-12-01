@@ -218,8 +218,11 @@ void showscene(char scene[][NROWS][NCOLS], int number, int menu) {
 
 struct _energy_block spawn_energy_block() {
 	struct _energy_block block;
-	block.x = rand() % NCOLS;
-	block.y = rand() % NROWS;
+	 do{     
+        block.x = rand() % NCOLS;
+        block.y = rand() % NROWS;
+    }while(snake.head.x == block.x && snake.head.y == block.y);
+    /* TO DO: check the rest of the body of the snake */
 	return block;
 }
 
