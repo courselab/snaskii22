@@ -232,7 +232,10 @@ unsigned int generate_seed() {
 		return time(NULL);
 	}
 	unsigned int seed;
-	fread(&seed, sizeof(unsigned int), 1, urandom);
+	size_t items_read = fread(&seed, sizeof(unsigned int), 1, urandom);
+	if (items_read != 1) {
+		return time(NULL);
+	}
 	fclose(urandom);
 	return seed;
 }
