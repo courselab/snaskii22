@@ -1,0 +1,30 @@
+name: C/C++ CI
+
+on:
+  push:
+    branches: [ "main", "develop" ]
+  pull_request:
+    branches: [ "main", "develop" ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+    
+    - name: Install packages
+      run: |
+        sudo apt update -qq
+        sudo apt install -y automake autoconf libtool
+        sudo apt install -y libncurses5-dev
+    
+    - name: bootstrap
+      run: ./bootstrap.sh
+    - name: configure
+      run: ./configure
+    - name: make
+      run: make
+    - name: make check
+      run: make check
