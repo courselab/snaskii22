@@ -49,29 +49,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include "utils.h"
 
-/* Game defaults */
-
-#define N_INTRO_SCENES 485 /* Number of frames of the intro animation.*/
-#define N_GAME_SCENES 1    /* Number of frames of the gamepay scnene. */
-
-#define MAX_DELAY 999999 /* Maximum possible delay. */
-
-#define NCOLS 90 /* Number of columns of the scene. */
-#define NROWS 40 /* Number of rows of the scene. */
-
-#define BLANK ' ' /* Blank-screen character. */
-
-#define BUFFSIZE 1024 /* Generic, auxilary buffer size. */
-#define SCENE_DIR_INTRO                                                     \
-    "intro"                   /* Directory with the intro animation scenes. \
-                               */
-#define SCENE_DIR_GAME "game" /* Directory with the game animation scene. */
-
-#define SNAKE_BODY "O"   /* Character to draw the snake. */
-#define ENERGY_BLOCK "+" /* Character to draw the energy block. */
-
-#define MAX_ENERGY_BLOCKS 5 /* Maximum number of energy blocks. */
-
 /* Global variables.*/
 
 struct timeval beginning, /* Time when game started. */
