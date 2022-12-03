@@ -20,25 +20,22 @@
 */
 
 
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef MOVIE_H
+#define MOVIE_H
 
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <ncurses.h>
+#include "scene.h"
 
 
-// Report a system error and exit
-#define sysfatal(expression)																\
-	if ((expression))																		\
-	{																						\
-		endwin();																			\
-		fprintf(stderr, "%s: %d: %s: %s\n", __FILE__, __LINE__, __func__, strerror(errno));	\
-		exit(EXIT_FAILURE);																	\
-	}
+#define MOVIE_SCENES_SIZE 485
+#define MOVIE_DIRECTORY "intro"
 
 
-#endif // UTILS_H
+// Play the intro movie animation
+void play_movie(scene_t scenes[MOVIE_SCENES_SIZE]);
+
+// Skip the intro movie animation
+void skip_movie();
+
+
+#endif // MOVIE_H
