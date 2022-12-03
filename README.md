@@ -104,6 +104,7 @@ The game score is the count of eaten blocks until the game is over.
 	- increases the game speed 
 	q quits
 	r at anytime to restart the game
+	space skips the introduction
 
 ## Contribute to this project
 
