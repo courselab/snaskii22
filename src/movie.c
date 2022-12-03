@@ -20,25 +20,43 @@
 */
 
 
-#ifndef UTILS_H
-#define UTILS_H
-
-
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include <time.h>
+#include <unistd.h>
 #include <ncurses.h>
+#include <stdbool.h>
+
+#include "movie.h"
+#include "scene.h"
 
 
-// Report a system error and exit
-#define sysfatal(expression)																\
-	if ((expression))																		\
-	{																						\
-		endwin();																			\
-		fprintf(stderr, "%s: %d: %s: %s\n", __FILE__, __LINE__, __func__, strerror(errno));	\
-		exit(EXIT_FAILURE);																	\
+#define MOVIE_DELAY (1e5 / 4) // 40us per frame
+
+static bool playing_movie = true;
+
+
+void play_movie(scene_t scenes[MOVIE_SCENES_SIZE])
+{
+	int scene = 0;
+
+	struct timespec request;
+	request.tv_sec = 0;
+
+	for (int i = 0; i < MOVIE_SCENES_SIZE && playing_movie; i++)
+	{
+		// Draw the current movie frame
+		clear();
+		draw_scene(scenes[scene]);
+		refresh();
+
+		scene = (scene + 1) % MOVIE_SCENES_SIZE;
+
+		// Wait until the next frame
+		request.tv_nsec = MOVIE_DELAY * 1e3;
+		nanosleep(&request, NULL);
 	}
+}
 
-
-#endif // UTILS_H
+void skip_movie()
+{
+	playing_movie = false;
+}
