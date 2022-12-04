@@ -20,3 +20,5 @@
 SUBDIRS = src scenes
 ACLOCAL_AMFLAGS = -I m4
 
+install-exec-hook:
+	echo -e "Snaskii has been installed, you can now start playing!"
