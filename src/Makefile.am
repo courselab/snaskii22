@@ -23,7 +23,7 @@ AM_LDFLAGS =  @LD_FLAGS@
 
 bin_PROGRAMS = snaskii.bin
 
-snaskii_bin_SOURCES = snaskii.c movie.c movie.h scene.c scene.h times.c times.h utils.h
+snaskii_bin_SOURCES = snaskii.c movie.c movie.h scene.c scene.h times.c times.h utils.h graphics.h graphics.c
 
 bin_SCRIPTS = snaskii
 
