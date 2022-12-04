@@ -112,6 +112,12 @@ void quit()
 	playing_game = false;
 }
 
+void panic_quit()
+{
+	endwin();
+	exit(1);
+}
+
 
 void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
 {
@@ -133,6 +139,8 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 
 	while (playing_game)
 	{
+
+		
 		update_times(times);
 
 		// TODO: Advance game
@@ -228,6 +236,18 @@ int main(int argc, char** argv)
 	sigaction(SIGINT, &action, NULL);
 
 
+	// Handle SIGSEGV (out of bounds error) to quit	
+	
+	struct sigaction panic_action;
+	sigaction(SIGSEGV,NULL, &panic_action);
+
+	panic_action.sa_handler = panic_quit;
+	sigaction(SIGSEGV,&panic_action, NULL);
+
+
+
+	
+
 	// Ncurses initialization
 
 	initscr();
@@ -235,6 +255,7 @@ int main(int argc, char** argv)
 	cbreak();
 	curs_set(FALSE);
 
+	
 
 	// Handle game controls in a different thread
 
@@ -251,6 +272,7 @@ int main(int argc, char** argv)
 	load_scenes(movie_scenes, MOVIE_SCENES_SIZE, data_path, MOVIE_DIRECTORY);
 
 	play_movie(movie_scenes);
+
 
 
 	// Play game
