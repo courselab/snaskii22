@@ -2,10 +2,10 @@
 
 ## Readme Available Languages
 ```
-- ENG version available [here](#ENG-version).
-- Versão PT-BR disponível [aqui](#Introdução).
+- ENG version available [here](#eng-version).
+- Versão PT-BR disponível [aqui](#pt-br).
 ```
-
+#ENG version
 ## Introduction
 Snaskii  is a very simple ASCII snake game tributed to the classic
 arcades of the 80s. It was meant to be developed as a collaborative
@@ -124,7 +124,7 @@ which contains important information.
 
 
 
-
+#PT-BR
 ## Introdução
 Snaskii é um jogo de cobra ASCII muito simples, uma homenagem ao clássico
 fliperamas dos anos 80. Foi concebido para ser desenvolvido como um exercício de colaboração
