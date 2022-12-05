@@ -195,12 +195,12 @@ Para obter instruções mais detalhadas, consulte o arquivo `INSTALL`
 
 ## EXECUÇÃO
 ```
- Usage:  snaski [options]
+ Uso:  snaski [opções]
 
-         Options
+         Opções
          
-	 -h              Displays this information message
-	 -d <path>       Selects custom data path
+	 -h              Exibe essa mensagem informativa
+	 -d <caminho>    Seleciona o caminho de dados personalizado
 ```
 
 ## O Jogo
