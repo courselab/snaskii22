@@ -1,10 +1,10 @@
 # Snaskii
 
 ## Readme Available Languages
-```
+
 - ENG version available [here](#eng-version).
 - Versão PT-BR disponível [aqui](#pt-br).
-```
+
 # ENG version
 ## Introduction
 Snaskii  is a very simple ASCII snake game tributed to the classic
