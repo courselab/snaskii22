@@ -139,8 +139,6 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 
 	while (playing_game)
 	{
-
-		
 		update_times(times);
 
 		// TODO: Advance game
@@ -244,10 +242,7 @@ int main(int argc, char** argv)
 	panic_action.sa_handler = panic_quit;
 	sigaction(SIGSEGV,&panic_action, NULL);
 
-
-
 	
-
 	// Ncurses initialization
 
 	initscr();
