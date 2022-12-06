@@ -28,14 +28,15 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <ncurses.h>
+
+#include "graphics.h"
 
 
 // Report a system error and exit
 #define sysfatal(expression)																\
 	if ((expression))																		\
 	{																						\
-		endwin();																			\
+		screen_end();																		\
 		fprintf(stderr, "%s: %d: %s: %s\n", __FILE__, __LINE__, __func__, strerror(errno));	\
 		exit(EXIT_FAILURE);																	\
 	}
