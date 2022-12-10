@@ -19,27 +19,27 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef GRAPHICS_H
+#define GRAPHICS_H
 
-#ifndef UTILS_H
-#define UTILS_H
+#define SCREEN_ROWS    40
+#define SCREEN_COLUMNS 90
 
+#define BLANK ' '
 
-#include <errno.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+struct sprite {
+	int x_pos, y_pos;
+	char value;
+};
 
-#include "graphics.h"
+void screen_init();
+void screen_clear();
+void screen_show();
+void screen_end();
 
+void screen_print(char* format, ...);
 
-// Report a system error and exit
-#define sysfatal(expression)																\
-	if ((expression))																		\
-	{																						\
-		screen_end();																		\
-		fprintf(stderr, "%s: %d: %s: %s\n", __FILE__, __LINE__, __func__, strerror(errno));	\
-		exit(EXIT_FAILURE);																	\
-	}
+void draw_background(char** background);
+void draw_sprite(struct sprite* spr);
 
-
-#endif // UTILS_H
+#endif // GRAPHICS_H
