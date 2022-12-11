@@ -1,8 +1,8 @@
-dnl    configure.ac - Autoconf script 
-dnl    
+dnl    configure.ac - Autoconf script
+dnl
 dnl    Copyright (c) 2021 - Monaco F. J. <monaco@usp.br>
 dnl
-dnl    This file is part of Snaskii. 
+dnl    This file is part of Snaskii.
 dnl
 dnl    Snaskii is free software: you can redistribute it and/or modify
 dnl    it under the terms of the GNU General Public License as published by
@@ -19,15 +19,15 @@ dnl    along with .  If not, see <http://www.gnu.org/licenses/>.
 dnl
 
 AC_INIT([Snaskii], [0.1.0], [monaco@usp.br]) dnl Init Autoconf
-AC_PREREQ([2.65])                              dnl Required autoconf version    
-AC_CONFIG_AUX_DIR([build-aux])                 dnl Where to write auxiliary files                                                                              
-AC_CONFIG_MACRO_DIR([m4])                      dnl m4 files here       
-AC_CONFIG_HEADERS([config.h])                  dnl Generate config.h   
+AC_PREREQ([2.65])                              dnl Required autoconf version
+AC_CONFIG_AUX_DIR([build-aux])                 dnl Where to write auxiliary files
+AC_CONFIG_MACRO_DIR([m4])                      dnl m4 files here
+AC_CONFIG_HEADERS([config.h])                  dnl Generate config.h
 
 AM_INIT_AUTOMAKE([-Wall 1.14.1 subdir-objects])	dnl Init Automake options
 
-AM_PROG_AR                      dnl Archiver for static lib                     
-LT_INIT                         dnl Libtool support in 'configure'  
+AM_PROG_AR                      dnl Archiver for static lib
+LT_INIT                         dnl Libtool support in 'configure'
 
 AC_PROG_CC 		        dnl Defines CC
 
@@ -43,14 +43,14 @@ AC_SEARCH_LIBS([clear], [ncurses], [], AC_MSG_ERROR([*** Can't find libncurses5]
 
 dnl Define variables to be used by Automake
 
-AC_SUBST([CPP_FLAGS],"-ansi -D_POSIX_C_SOURCE=200809L -Wall -Wextra") 
+AC_SUBST([CPP_FLAGS],"-ansi -D_POSIX_C_SOURCE=200809L -Wall -Wextra -std=gnu99")
 AC_SUBST([C_FLAGS])
 AC_SUBST([LD_FLAGS])
 
 dnl Canocial check for POSIX threads.
 
 AX_PTHREAD([AC_DEFINE(HAVE_PTHREAD,1,
-            [Define to 1 if POSIX threads libraries and headers are found.]) ], 
+            [Define to 1 if POSIX threads libraries and headers are found.]) ],
 	    AC_MSG_ERROR([POSIX threads support not detected.]))
 
 dnl AC_DEFINE_UNQUOTED([DATADIR], [$datarootdir"],

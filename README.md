@@ -5,7 +5,16 @@ arcades of the 80s. It was meant to be developed as a collaborative
 programming exercise in a course on Open Source Systems taught to
 undergraduate CS students.
 
+
+
+
 ## Quick start
+
+ If you have nix installed, you can just:
+
+ ```bash
+ $ nix run github:courselab/snaskii22
+ ```
 
  If you have obtained the project source from the __version control repository__,
 
@@ -75,7 +84,7 @@ and the data files in `/tmp/share`.
 ## EXECUTION
 
 ```
- Usage:  snaski [options]
+ Usage:  snaskii [options]
 
          Options
          
@@ -85,7 +94,9 @@ and the data files in `/tmp/share`.
 
  ## The game
  
-The game takes place in a rectangular arena where a snake continuously moves in one of four directions: left, right, up, and down --- it never stops. As the snake moves, it loses energy and if all of it is exhausted, the snake dies. To recover energy, the snake needs to eat pieces of food that are constantly replaced at random positions.
+The game takes place in a rectangular arena where a snake continuously
+moves in one of four directions: left, right, up, and down --- it never 
+stops. As the snake moves, it loses energy and if all of it is exhausted, the snake dies. To recover energy, the snake needs to eat pieces of food that are constantly replaced at random positions.
 
 Be careful, though. The arena borders are electrified and would kill the snake if touched. Moreover, mind that the snake is poisonous and it would also die if it accidentally bites itself, i.e. if the snake's head crosses its own body (yes, this is weird for snakes, but this is a Tron Snake).
 
@@ -97,6 +108,7 @@ The game score is the count of eaten blocks until the game is over.
 	- increases the game speed 
 	q quits
 	r at anytime to restart the game
+	space skips the introduction
 
 ## Contribute to this project
 
