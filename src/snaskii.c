@@ -32,6 +32,7 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <sys/time.h>
+#include <ncurses.h>
 
 #include "movie.h"
 #include "scene.h"
