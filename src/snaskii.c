@@ -147,19 +147,19 @@ void* get_inputs()
 				break;
 
 			case 'w':
-				snake.direction = UP;
+				if(snake.direction != DOWN) snake.direction = UP;
 				break;
 
 			case 's':
-				snake.direction = DOWN;
+				if(snake.direction != UP) snake.direction = DOWN;
 				break;
 
 			case 'a':
-				snake.direction = LEFT;
+				if(snake.direction != RIGHT) snake.direction = LEFT;
 				break;
 
 			case 'd':
-				snake.direction = RIGHT;
+				if(snake.direction != LEFT) snake.direction = RIGHT;
 				break;
 		}
 	}
