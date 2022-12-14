@@ -75,6 +75,8 @@ coord_t;
 bool playing_game = true;
 int game_delay = GAME_DELAY;
 snake_t snake;
+times_t times;
+coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
 
 
 void quit()
@@ -84,13 +86,17 @@ void quit()
 }
 
 
-void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
+void init_game()
 {
-	init_snake(snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
+	init_times(&times);
+  
+	init_snake(&snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
+  
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
-void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
+
+void play_game(scene_t scenes[GAME_SCENES_SIZE])
 {
 	int scene = 0;
 
@@ -99,7 +105,7 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 
 	while (playing_game)
 	{
-		update_times(times);
+		update_times(&times);
 
 		// TODO: Advance game
 		move_snake(&snake);
@@ -109,7 +115,7 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 		draw_snake(&snake);
 		screen_show();
 
-		draw_menu(times);
+		draw_menu(&times);
 
 		scene = (scene + 1) % GAME_SCENES_SIZE;
 
@@ -147,6 +153,10 @@ void* get_inputs()
 				skip_movie();
 				break;
 
+			case 'r':
+				init_game();
+				break;
+        
 			case 'w':
 				if(snake.direction != DOWN) snake.direction = UP;
 				break;
@@ -231,18 +241,15 @@ int main(int argc, char** argv)
 
 
 	// Play game
-
-	times_t times;
-	coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
-
+  
 	scene_t game_scenes[GAME_SCENES_SIZE];
+
 	clear_scenes(game_scenes, GAME_SCENES_SIZE);
 	load_scenes(game_scenes, GAME_SCENES_SIZE, data_path, GAME_DIRECTORY);
 
-	init_times(&times);
-	init_game(&snake, energy_blocks);
+	init_game();
 
-	play_game(game_scenes, &times);
+	play_game(game_scenes);
 
 
 	// Cleanup and exit
