@@ -159,7 +159,7 @@ você pode instalar os softwares necessários com:
 $ sudo apt install automake autoconf libtool
 ```
 
-Por outro lado, se você obteu o software de __distribution repository__, geralmente como tarball,
+Por outro lado, se você obteve o software de __distribution repository__, geralmente como tarball,
 você já deve ter o script `configure`.
 
 De qualquer forma, encontre o arquivo na pasta raíz do diretório fonte e o execute:
@@ -222,7 +222,7 @@ para de se mover. Conforme a cobra se move ela perde energia e, se toda sua ener
 cobra morre. Para recuperar energia, a cobra precisa comer pedaços de comida que
 são constantemente substituídos em posições aleatórias.
 
-Tenha cuidado, no entanto. As bordas da arena são eletrificadas e matariam a cobrinha se forem tocadas. Além disso, lembre-se que a cobra é venenosa e também morreria se
+Tenha cuidado, no entanto. As bordas da arena são eletrificadas e matariam a cobrinha se fossem tocadas. Além disso, lembre-se que a cobra é venenosa e também morreria se
 ela se morder acidentalmente, ou seja, se a cabeça da cobra cruzar seu próprio corpo (sim,
 isso é estranho para cobras, mas esta é uma Tron Snake).
 
