@@ -90,7 +90,7 @@ void init_game()
 {
 	init_times(&times);
   
-	init_snake(snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
+	init_snake(&snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
   
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
