@@ -32,21 +32,20 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <sys/time.h>
+#include <ncurses.h>
 
 #include "movie.h"
 #include "scene.h"
 #include "times.h"
 #include "utils.h"
 #include "graphics.h"
-
+#include "snake.h"
 
 #define MAX_DELAY 999999
 
 #define GAME_SCENES_SIZE 1
 #define GAME_DIRECTORY "game"
 #define GAME_DELAY (1e5 / 3) // 30us per frame
-
-#define SNAKE_BODY 'O'
 
 #define ENERGY_BLOCK '+'
 #define INACTIVE_BLOCK -1
@@ -64,16 +63,6 @@
 	#define DATADIR "."
 #endif
 
-
-typedef enum Direction
-{
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-}
-direction_t;
-
 typedef struct Coord
 {
 	int x;
@@ -81,19 +70,11 @@ typedef struct Coord
 }
 coord_t;
 
-typedef struct Snake
-{
-	int length;
-	coord_t head;
-	direction_t direction;
-}
-snake_t;
-
-
 // Global variables
 
 bool playing_game = true;
 int game_delay = GAME_DELAY;
+snake_t snake;
 
 
 void quit()
@@ -105,12 +86,7 @@ void quit()
 
 void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
 {
-	snake->length = 1;
-	snake->direction = RIGHT;
-
-	snake->head.x = 0;
-	snake->head.y = 0;
-
+	init_snake(snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
@@ -126,9 +102,11 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 		update_times(times);
 
 		// TODO: Advance game
+		move_snake(&snake);
 
 		// Draw the current scene frame
 		draw_background((char**)scenes[scene]);
+		draw_snake(&snake);
 		screen_show();
 
 		draw_menu(times);
@@ -145,7 +123,6 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 void* get_inputs()
 {
 	// TODO: Discuss the possibility of a independent event system
-	// TODO: Add snake controls
 
 	while (playing_game)
 	{
@@ -168,6 +145,22 @@ void* get_inputs()
 
 			case ' ':
 				skip_movie();
+				break;
+
+			case 'w':
+				if(snake.direction != DOWN) snake.direction = UP;
+				break;
+
+			case 's':
+				if(snake.direction != UP) snake.direction = DOWN;
+				break;
+
+			case 'a':
+				if(snake.direction != RIGHT) snake.direction = LEFT;
+				break;
+
+			case 'd':
+				if(snake.direction != LEFT) snake.direction = RIGHT;
 				break;
 		}
 	}
@@ -239,7 +232,6 @@ int main(int argc, char** argv)
 
 	// Play game
 
-	snake_t snake;
 	times_t times;
 	coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
 
