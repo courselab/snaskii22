@@ -96,9 +96,14 @@ and the data files in `/tmp/share`.
  
 The game takes place in a rectangular arena where a snake continuously
 moves in one of four directions: left, right, up, and down --- it never 
-stops. As the snake moves, it loses energy and if all of it is exhausted, the snake dies. To recover energy, the snake needs to eat pieces of food that are constantly replaced at random positions.
+stops. As the snake moves, it loses energy and if all of it is exhausted, the 
+snake dies. To recover energy, the snake needs to eat pieces of food that are 
+constantly replaced at random positions.
 
-Be careful, though. The arena borders are electrified and would kill the snake if touched. Moreover, mind that the snake is poisonous and it would also die if it accidentally bites itself, i.e. if the snake's head crosses its own body (yes, this is weird for snakes, but this is a Tron Snake).
+Be careful, though. The arena borders are electrified and would kill the snake 
+if touched. Moreover, mind that the snake is poisonous and it would also die if 
+it accidentally bites itself, i.e. if the snake's head crosses its own body (yes, 
+this is weird for snakes, but this is a Tron Snake).
 
 The game score is the count of eaten blocks until the game is over.
 
