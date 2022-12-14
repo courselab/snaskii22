@@ -155,6 +155,7 @@ void* get_inputs()
 
 			case 'r':
 				init_game();
+				break;
         
 			case 'w':
 				if(snake.direction != DOWN) snake.direction = UP;
