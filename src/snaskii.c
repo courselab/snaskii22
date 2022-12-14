@@ -58,6 +58,8 @@
 	"    -d <path>  path to data files   \n" \
 	"    -s         skip intro scene     \n"
 
+#define KEYS "wsda"
+
 #ifndef DATADIR
 	// Remove the undefined DATADIR error, but this should be set with the -D compilation flag
 	#define DATADIR "."
@@ -133,6 +135,11 @@ void* get_inputs()
 	while (playing_game)
 	{
 		int input = getch();
+
+		if(input == '\033'){
+			getch();
+			input = KEYS[getch() - 65];
+		}
 
 		switch (input)
 		{
