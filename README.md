@@ -102,6 +102,7 @@ The game score is the count of eaten blocks until the game is over.
 	WASD to control the snake
 	+ decreases the game speed
 	- increases the game speed 
+	space skips animation intro
 	q quits
 	r at anytime to restart the game
 
