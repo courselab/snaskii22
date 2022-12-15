@@ -14,6 +14,7 @@ body_t* create_body(int x, int y) {
 void init_snake(snake_t* snake, int head_x, int head_y) {
 	snake->direction = RIGHT;
 	snake->length = 2;
+	snake->alive = true;
 
 	snake->head = create_body(head_x, head_y);
 	snake->head->next = create_body(head_x - 1, head_y);
@@ -66,6 +67,11 @@ void move_snake(snake_t* snake) {
 	aux->sp.y_pos = snake->head->sp.y_pos;
 
 	push_front(snake, aux);
+
+	if (aux->sp.x_pos < 0 || aux->sp.x_pos >= SCREEN_COLUMNS ||
+		aux->sp.y_pos < 0 || aux->sp.y_pos >= SCREEN_ROWS) {
+		snake->alive = false;
+	}
 
 
 #if 1

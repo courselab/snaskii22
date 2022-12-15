@@ -104,6 +104,10 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 		// TODO: Advance game
 		move_snake(&snake);
 
+		if (!snake.alive) {
+			quit();
+		}
+
 		// Draw the current scene frame
 		draw_background((char**)scenes[scene]);
 		draw_snake(&snake);

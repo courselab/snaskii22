@@ -22,6 +22,7 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
+#include <stdbool.h>
 #include "graphics.h"
 
 #define SNAKE_BODY 'O'
@@ -48,6 +49,7 @@ typedef struct Snake {
 	int prev_tail_x;
 	int prev_tail_y;
 	int length;
+	bool alive;
 	direction_t direction;
 }
 snake_t;
