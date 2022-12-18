@@ -56,6 +56,13 @@ body_t* pop_back(snake_t* snake) {
 	return ret;
 }
 
+
+bool is_inside(body_t *aux) {
+    return aux->sp.x_pos > 0 && aux->sp.x_pos < SCREEN_COLUMNS - 1 &&
+           aux->sp.y_pos > 0 && aux->sp.y_pos < SCREEN_ROWS - 1;
+}
+
+
 // TODO: Make snake velocity not FPS dependent
 void move_snake(snake_t* snake) {
 	body_t* aux = pop_back(snake);
@@ -68,8 +75,7 @@ void move_snake(snake_t* snake) {
 
 	push_front(snake, aux);
 
-	if (aux->sp.x_pos < 0 || aux->sp.x_pos >= SCREEN_COLUMNS ||
-		aux->sp.y_pos < 0 || aux->sp.y_pos >= SCREEN_ROWS) {
+	if (!is_inside(aux)) {
 		snake->alive = false;
 	}
 

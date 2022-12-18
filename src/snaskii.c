@@ -105,7 +105,8 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 		move_snake(&snake);
 
 		if (!snake.alive) {
-			quit();
+            coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
+            init_game(&snake, energy_blocks);
 		}
 
 		// Draw the current scene frame
