@@ -10,8 +10,8 @@
 |        ,:::::'       ;           OOO\                                                  |
 |        ::::::;       ;          OOOOO\                                                 |
 |        ;:::::;       ;         OOOOOOOO            You died!                           |
-|       ,;::::::;     ;'         / OOOOOOO           Score: %d                           |
-|     ;:::::::::`. ,,,;.        /  / DOOOOOO         You survived for %d seconds         |
+|       ,;::::::;     ;'         / OOOOOOO           Score: 0                            |
+|     ;:::::::::`. ,,,;.        /  / DOOOOOO         You survived for 0s                 |
 |   .';:::::::::::::::::;,     /  /     DOOOO        'r' -> restart                      |
 |  ,::::::;::::::;;;;::::;,   /  /        DOOO       'q' -> quit                         |
 | ;`::::::`'::::::;;;::::: ,#/  /          DOOO                                          |

@@ -60,6 +60,8 @@
 	"    -d <path>  path to data files   \n" \
 	"    -s         skip intro scene     \n"
 
+#define KEYS "wsda"
+
 #ifndef DATADIR
 	// Remove the undefined DATADIR error, but this should be set with the -D compilation flag
 	#define DATADIR "."
@@ -78,6 +80,8 @@ bool playing_game = true;
 bool requested_restart = false;
 int game_delay = GAME_DELAY;
 snake_t snake;
+times_t times;
+coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
 
 
 void quit()
@@ -87,13 +91,16 @@ void quit()
 }
 
 
-void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
+void init_game()
 {
-	init_snake(snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
+	init_times(&times);
+  
+	init_snake(&snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
+  
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
-void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t *death_scene, times_t* times)
+void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 {
 	int scene = 0;
 
@@ -104,27 +111,25 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t *death_scene, times_t* 
 	{
 		if (!snake.alive) 
 		{
-			draw_death_scene(0, (int)times->elapsed_start.tv_sec, death_scene);
+			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
 			screen_show();
 
 			if (requested_restart) {
-				coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
-				init_game(&snake, energy_blocks);
-				init_times(times);
+				init_game();
 				requested_restart = false;
 			}
 		} else {
 			// TODO: Advance game
 			move_snake(&snake);
 
-			update_times(times);
+			update_times(&times);
 
 			// Draw the current scene frame
 			draw_background((char**)scenes[scene]);
 			draw_snake(&snake);
 			screen_show();
 
-			draw_menu(times);
+			draw_menu(&times);
 
 			scene = (scene + 1) % GAME_SCENES_SIZE;
 		}
@@ -143,6 +148,11 @@ void* get_inputs()
 	while (playing_game)
 	{
 		int input = getch();
+
+		if(input == '\033'){
+			getch();
+			input = KEYS[getch() - 65];
+		}
 
 		switch (input)
 		{
@@ -251,11 +261,9 @@ int main(int argc, char** argv)
 
 
 	// Play game
-
-	times_t times;
-	coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
-
+  
 	scene_t game_scenes[GAME_SCENES_SIZE];
+
 	clear_scenes(game_scenes, GAME_SCENES_SIZE);
 	load_scenes(game_scenes, GAME_SCENES_SIZE, data_path, GAME_DIRECTORY);
 
@@ -263,14 +271,12 @@ int main(int argc, char** argv)
 	clear_scenes(&death_scene, DEATH_SCENE_SIZE);
 	load_scenes(&death_scene, DEATH_SCENE_SIZE, data_path, DEATH_DIRECTORY);
 
-	init_times(&times);
-	init_game(&snake, energy_blocks);
 
-	play_game(game_scenes, &death_scene, &times);
+	init_game();
+	play_game(game_scenes, death_scene);
 
 
 	// Cleanup and exit
-
 	screen_end();
 	free(data_path);
 

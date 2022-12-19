@@ -1,11 +1,11 @@
 #include "snake.h"
 #include <stdlib.h>
 
-body_t* create_body(int x, int y) {
+body_t* create_body(int x, int y,int is_head) {
 	body_t* body = malloc(sizeof(body_t));
 	body->sp.x_pos = x;
 	body->sp.y_pos = y;
-	body->sp.value = SNAKE_BODY;
+	body->sp.value = is_head==1?SNAKE_HEAD_RIGHT:SNAKE_BODY;
 	body->next = NULL;
 	body->prev = NULL;
 	return body;
@@ -16,8 +16,8 @@ void init_snake(snake_t* snake, int head_x, int head_y) {
 	snake->length = 2;
 	snake->alive = true;
 
-	snake->head = create_body(head_x, head_y);
-	snake->head->next = create_body(head_x - 1, head_y);
+	snake->head = create_body(head_x, head_y, 1);
+	snake->head->next = create_body(head_x - 1, head_y, 0);
 
 	snake->tail = snake->head->next;
 	snake->tail->prev = snake->head;
@@ -27,15 +27,36 @@ void init_snake(snake_t* snake, int head_x, int head_y) {
 }
 
 void grow_snake(snake_t* snake) {
-	snake->tail->next = create_body(snake->prev_tail_x, snake->prev_tail_y);
+	snake->tail->next = create_body(snake->prev_tail_x, snake->prev_tail_y, 0);
 	snake->tail->next->prev = snake->tail;
 	snake->tail = snake->tail->next;
 	snake->length++;
 }
 
+
+char update_snake_head_icon(snake_t* snake) {
+	snake->head->sp.value = SNAKE_BODY;
+	switch(snake->direction) {
+		case UP:
+			return SNAKE_HEAD_UP;
+			break;
+		case DOWN:
+			return SNAKE_HEAD_DOWN;
+			break;
+		case LEFT:
+			return SNAKE_HEAD_LEFT;
+			break;
+		case RIGHT:
+			return SNAKE_HEAD_RIGHT;
+			break;
+	}
+	return '0';
+}
+
 void push_front(snake_t* snake, body_t* aux) {
 	aux->prev = NULL;
 	aux->next = snake->head;
+	aux->sp.value = update_snake_head_icon(snake);
 
 	snake->head->prev = aux;
 
