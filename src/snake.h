@@ -24,6 +24,10 @@
 
 #include "graphics.h"
 
+#define SNAKE_HEAD_UP '^'
+#define SNAKE_HEAD_DOWN 'v'
+#define SNAKE_HEAD_RIGHT '>'
+#define SNAKE_HEAD_LEFT '<'
 #define SNAKE_BODY 'O'
 
 typedef enum Direction
