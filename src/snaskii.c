@@ -44,7 +44,9 @@
 #define MAX_DELAY 999999
 
 #define GAME_SCENES_SIZE 1
+#define DEATH_SCENE_SIZE 1
 #define GAME_DIRECTORY "game"
+#define DEATH_DIRECTORY "death"
 #define GAME_DELAY (1e5 / 3) // 30us per frame
 
 #define ENERGY_BLOCK '+'
@@ -73,6 +75,7 @@ coord_t;
 // Global variables
 
 bool playing_game = true;
+bool requested_restart = false;
 int game_delay = GAME_DELAY;
 snake_t snake;
 
@@ -90,7 +93,7 @@ void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
-void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
+void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t *death_scene, times_t* times)
 {
 	int scene = 0;
 
@@ -99,24 +102,32 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 
 	while (playing_game)
 	{
-		update_times(times);
+		if (!snake.alive) 
+		{
+			draw_death_scene(0, (int)times->elapsed_start.tv_sec, death_scene);
+			screen_show();
 
-		// TODO: Advance game
-		move_snake(&snake);
+			if (requested_restart) {
+				coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
+				init_game(&snake, energy_blocks);
+				init_times(times);
+				requested_restart = false;
+			}
+		} else {
+			// TODO: Advance game
+			move_snake(&snake);
 
-		if (!snake.alive) {
-            coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
-            init_game(&snake, energy_blocks);
+			update_times(times);
+
+			// Draw the current scene frame
+			draw_background((char**)scenes[scene]);
+			draw_snake(&snake);
+			screen_show();
+
+			draw_menu(times);
+
+			scene = (scene + 1) % GAME_SCENES_SIZE;
 		}
-
-		// Draw the current scene frame
-		draw_background((char**)scenes[scene]);
-		draw_snake(&snake);
-		screen_show();
-
-		draw_menu(times);
-
-		scene = (scene + 1) % GAME_SCENES_SIZE;
 
 		// Wait until the next frame
 		request.tv_nsec = game_delay * 1e3;
@@ -150,6 +161,10 @@ void* get_inputs()
 
 			case ' ':
 				skip_movie();
+				break;
+
+			case 'r':
+				requested_restart = true;
 				break;
 
 			case 'w':
@@ -244,10 +259,14 @@ int main(int argc, char** argv)
 	clear_scenes(game_scenes, GAME_SCENES_SIZE);
 	load_scenes(game_scenes, GAME_SCENES_SIZE, data_path, GAME_DIRECTORY);
 
+	scene_t death_scene;
+	clear_scenes(&death_scene, DEATH_SCENE_SIZE);
+	load_scenes(&death_scene, DEATH_SCENE_SIZE, data_path, DEATH_DIRECTORY);
+
 	init_times(&times);
 	init_game(&snake, energy_blocks);
 
-	play_game(game_scenes, &times);
+	play_game(game_scenes, &death_scene, &times);
 
 
 	// Cleanup and exit

@@ -35,6 +35,9 @@
 
 #include "graphics.h"
 
+#define DEATH_SCORE_LINE 12
+#define DEATH_TIME_LINE 13
+
 static char screen_buffers[2][SCREEN_ROWS][SCREEN_COLUMNS];
 static size_t curr_buffer_show = 0;
 
@@ -50,6 +53,22 @@ void screen_init() {
 
 void screen_end() {
 	endwin();
+}
+
+void draw_death_scene(int score, int elapsed_seconds, char death_scene[SCREEN_ROWS][SCREEN_COLUMNS]) {
+	char background[SCREEN_ROWS][SCREEN_COLUMNS];
+	memcpy(background, death_scene, SCREEN_ROWS * SCREEN_COLUMNS);
+
+	// ! lines need to reflect position of %d in sprites
+	snprintf(background[DEATH_TIME_LINE], SCREEN_COLUMNS, death_scene[DEATH_TIME_LINE], elapsed_seconds);
+	background[DEATH_TIME_LINE][SCREEN_COLUMNS - 1] = '|';
+	background[DEATH_TIME_LINE][SCREEN_COLUMNS - 2] = ' ';
+
+	snprintf(background[DEATH_SCORE_LINE], SCREEN_COLUMNS, death_scene[DEATH_SCORE_LINE], score);
+	background[DEATH_SCORE_LINE][SCREEN_COLUMNS - 1] = '|';
+	background[DEATH_SCORE_LINE][SCREEN_COLUMNS - 2] = ' ';
+
+	draw_background((char **)background);
 }
 
 void draw_sprite(struct sprite* spr) {
