@@ -118,3 +118,7 @@ docs/CONTRIBUTING.md
 
 which contains important information.
 
+---
+
+<sup>Instituto de Ciências Matemáticas e de Computação (ICMC) - Universidade de São Paulo (USP)</sup>
+
