@@ -30,6 +30,7 @@
 #define SNAKE_HEAD_RIGHT '>'
 #define SNAKE_HEAD_LEFT '<'
 #define SNAKE_BODY 'O'
+#define DEFAULT_SPEED 3
 
 typedef enum Direction
 {
@@ -55,12 +56,14 @@ typedef struct Snake {
 	int length;
 	bool alive;
 	direction_t direction;
+    double x_pos, y_pos;
+    double speed;
 }
 snake_t;
 
 void init_snake(snake_t* snake, int head_x, int head_y);
 void grow_snake(snake_t* snake);
-void move_snake(snake_t* snake);
+void move_snake(snake_t* snake, double sync);
 void draw_snake(snake_t* snake);
 
 #endif // SNAKE_H

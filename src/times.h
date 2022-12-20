@@ -45,4 +45,7 @@ void init_times(times_t* times);
 void update_times(times_t* times);
 
 
+double get_fps(const times_t* times);
+
+
 #endif // TIMES_H

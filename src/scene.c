@@ -73,7 +73,7 @@ void load_scenes(scene_t scenes[], int size, const char* path, const char* direc
 
 void draw_menu(const times_t* times)
 {
-	double fps = 1.0 / (times->elapsed_last_frame.tv_sec + times->elapsed_last_frame.tv_usec * 1E-6);
+	double fps = get_fps(times);
 	screen_print("Elapsed: %5ds, fps = %5.2f\n", (int)times->elapsed_start.tv_sec, fps);
 
 	screen_print("Movement:             Commands:\n");

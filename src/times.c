@@ -65,3 +65,8 @@ void update_times(times_t* times)
 	subtract_time(&times->now, &times->start, &times->elapsed_start);
 	subtract_time(&times->now, &times->last_frame, &times->elapsed_last_frame);
 }
+
+
+double get_fps(const times_t* times) {
+    return 1.0 / (times->elapsed_last_frame.tv_sec + times->elapsed_last_frame.tv_usec * 1E-6);
+}
