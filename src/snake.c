@@ -15,8 +15,11 @@ void init_snake(snake_t* snake, int head_x, int head_y) {
 	snake->direction = RIGHT;
 	snake->length = 2;
 	snake->alive = true;
+    snake->speed = DEFAULT_SPEED;
 
 	snake->head = create_body(head_x, head_y, 1);
+    snake->x_pos = (double) head_x;
+    snake->y_pos = (double) head_y;
 	snake->head->next = create_body(head_x - 1, head_y, 0);
 
 	snake->tail = snake->head->next;
@@ -39,18 +42,15 @@ char update_snake_head_icon(snake_t* snake) {
 	switch(snake->direction) {
 		case UP:
 			return SNAKE_HEAD_UP;
-			break;
 		case DOWN:
 			return SNAKE_HEAD_DOWN;
-			break;
 		case LEFT:
 			return SNAKE_HEAD_LEFT;
-			break;
 		case RIGHT:
 			return SNAKE_HEAD_RIGHT;
-			break;
+        default:
+            return '0';
 	}
-	return '0';
 }
 
 void push_front(snake_t* snake, body_t* aux) {
@@ -84,39 +84,36 @@ bool is_inside(body_t *aux) {
 }
 
 
-// TODO: Make snake velocity not FPS dependent
-void move_snake(snake_t* snake) {
+void move_snake(snake_t* snake, double sync) {
 	body_t* aux = pop_back(snake);
 
 	snake->prev_tail_x = aux->sp.x_pos;
 	snake->prev_tail_y = aux->sp.y_pos;
 
-	aux->sp.x_pos = snake->head->sp.x_pos;
-	aux->sp.y_pos = snake->head->sp.y_pos;
-
+	aux->sp.x_pos = (int) snake->x_pos;
+	aux->sp.y_pos = (int) snake->y_pos;
 	push_front(snake, aux);
 
 	if (!is_inside(aux)) {
 		snake->alive = false;
 	}
 
+    double sync_speed = snake->speed * sync;
 
-#if 1
 	switch(snake->direction) {
 		case UP:
-			snake->head->sp.y_pos -= 1;
+			snake->y_pos -= sync_speed;
 			break;
 		case DOWN:
-			snake->head->sp.y_pos += 1;
+			snake->y_pos += sync_speed;
 			break;
 		case LEFT:
-			snake->head->sp.x_pos -= 1;
+			snake->x_pos -= sync_speed;
 			break;
 		case RIGHT:
-			snake->head->sp.x_pos += 1;
+			snake->x_pos += sync_speed;
 			break;
 	}
-#endif
 }
 
 void draw_snake(snake_t* snake) {

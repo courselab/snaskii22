@@ -42,6 +42,8 @@
 #include "snake.h"
 
 #define MAX_DELAY 999999
+#define MIN_DELAY 10
+#define CHANGE_DELAY 2
 
 #define GAME_SCENES_SIZE 1
 #define DEATH_SCENE_SIZE 1
@@ -104,7 +106,10 @@ void init_game()
 void tick_step()
 {
     update_times(&times);
-    move_snake(&snake);
+
+    double sync = (double) MIN_DELAY / get_fps(&times);
+
+    move_snake(&snake, sync);
 }
 
 
@@ -169,8 +174,8 @@ void* get_inputs()
 				break;
 
 			case '-': // Decrease FPS
-				game_delay = game_delay * (1.1);
-				if(game_delay > MAX_DELAY) game_delay = MAX_DELAY;
+                game_delay = game_delay * (1.1);
+				if (game_delay > MAX_DELAY) game_delay = MAX_DELAY;
 				break;
 
 			case 'q':
