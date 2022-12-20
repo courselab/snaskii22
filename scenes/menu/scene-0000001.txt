@@ -33,7 +33,7 @@
 |                                                                                        |                          
 |                                                                                        |
 |                                                                                        |
-|                                < Press ESPACE to start >                               |
+|                                < Press SPACE to start >                                |
 |                                                                                        |
 |                                                                                        |
 |                                                                            'q' -> quit |
