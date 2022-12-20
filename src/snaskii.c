@@ -47,8 +47,10 @@
 
 #define GAME_SCENES_SIZE 1
 #define DEATH_SCENE_SIZE 1
+#define MENU_SCENES_SIZE 2
 #define GAME_DIRECTORY "game"
 #define DEATH_DIRECTORY "death"
+#define MENU_DIRECTORY "menu"
 #define GAME_DELAY (1e5 / 3) // 30us per frame
 
 #define ENERGY_BLOCK '+'
@@ -287,7 +289,16 @@ int main(int argc, char** argv)
 	clear_scenes(movie_scenes, MOVIE_SCENES_SIZE);
 	load_scenes(movie_scenes, MOVIE_SCENES_SIZE, data_path, MOVIE_DIRECTORY);
 
-	play_movie(movie_scenes);
+	play_movie((scene_t *)movie_scenes, MOVIE_SCENES_SIZE, MOVIE_DELAY, false);
+
+
+	// Main Menu Wait 
+
+	scene_t menu_scene[MENU_SCENES_SIZE];
+	clear_scenes(menu_scene, MENU_SCENES_SIZE);
+	load_scenes(menu_scene, MENU_SCENES_SIZE, data_path, MENU_DIRECTORY);
+
+	play_movie((scene_t *)menu_scene, MENU_SCENES_SIZE, MENU_DELAY, true);
 
 
 	// Play game

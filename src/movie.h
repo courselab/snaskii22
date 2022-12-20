@@ -29,10 +29,12 @@
 
 #define MOVIE_SCENES_SIZE 485
 #define MOVIE_DIRECTORY "intro"
+#define MOVIE_DELAY (1e5 / 4) // 40us per frame
 
+#define MENU_DELAY (300 % 1000) * 1e3 // 300 msec
 
 // Play the intro movie animation
-void play_movie(scene_t scenes[MOVIE_SCENES_SIZE]);
+void play_movie(scene_t *scenes, int movie_scenes_size, int movie_delay, bool loop);
 
 // Skip the intro movie animation
 void skip_movie();
