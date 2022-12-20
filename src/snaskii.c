@@ -19,17 +19,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
-
-/*
-	We use ncurses library, a CRT screen handling and optimization package.
-	It implements wrapper over terminal capabilities and provides handy
-	functions to draw characters at arbitrary positions on the screen,
-	clear the terminal etc.
-
-	See https://tldp.org/HOWTO/NCURSES-Programming-HOWTO.
-*/
-#include <ncurses.h>
-
 // Autoconf tests
 #include <config.h>
 
@@ -43,20 +32,22 @@
 #include <pthread.h>
 #include <stdbool.h>
 #include <sys/time.h>
+#include <ncurses.h>
 
 #include "movie.h"
 #include "scene.h"
 #include "times.h"
 #include "utils.h"
-
+#include "graphics.h"
+#include "snake.h"
 
 #define MAX_DELAY 999999
 
 #define GAME_SCENES_SIZE 1
+#define DEATH_SCENE_SIZE 1
 #define GAME_DIRECTORY "game"
+#define DEATH_DIRECTORY "death"
 #define GAME_DELAY (1e5 / 3) // 30us per frame
-
-#define SNAKE_BODY 'O'
 
 #define ENERGY_BLOCK '+'
 #define INACTIVE_BLOCK -1
@@ -69,20 +60,12 @@
 	"    -d <path>  path to data files   \n" \
 	"    -s         skip intro scene     \n"
 
+#define KEYS "wsda"
+
 #ifndef DATADIR
 	// Remove the undefined DATADIR error, but this should be set with the -D compilation flag
 	#define DATADIR "."
 #endif
-
-
-typedef enum Direction
-{
-	UP,
-	DOWN,
-	LEFT,
-	RIGHT,
-}
-direction_t;
 
 typedef struct Coord
 {
@@ -91,19 +74,14 @@ typedef struct Coord
 }
 coord_t;
 
-typedef struct Snake
-{
-	int length;
-	coord_t head;
-	direction_t direction;
-}
-snake_t;
-
-
 // Global variables
 
 bool playing_game = true;
+bool requested_restart = false;
 int game_delay = GAME_DELAY;
+snake_t snake;
+times_t times;
+coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
 
 
 void quit()
@@ -119,18 +97,16 @@ void panic_quit()
 }
 
 
-void init_game(snake_t* snake, coord_t energy_blocks[ENERGY_BLOCKS_SIZE])
+void init_game()
 {
-	snake->length = 1;
-	snake->direction = RIGHT;
-
-	snake->head.x = 0;
-	snake->head.y = 0;
-
+	init_times(&times);
+  
+	init_snake(&snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
+  
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
-void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
+void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 {
 	int scene = 0;
 
@@ -139,17 +115,30 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 
 	while (playing_game)
 	{
-		update_times(times);
+		if (!snake.alive) 
+		{
+			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
+			screen_show();
 
-		// TODO: Advance game
+			if (requested_restart) {
+				init_game();
+				requested_restart = false;
+			}
+		} else {
+			// TODO: Advance game
+			move_snake(&snake);
 
-		// Draw the current scene frame
-		clear();
-		draw_scene(scenes[scene]);
-		draw_menu(times);
-		refresh();
+			update_times(&times);
 
-		scene = (scene + 1) % GAME_SCENES_SIZE;
+			// Draw the current scene frame
+			draw_background((char**)scenes[scene]);
+			draw_snake(&snake);
+			screen_show();
+
+			draw_menu(&times);
+
+			scene = (scene + 1) % GAME_SCENES_SIZE;
+		}
 
 		// Wait until the next frame
 		request.tv_nsec = game_delay * 1e3;
@@ -161,11 +150,15 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], times_t* times)
 void* get_inputs()
 {
 	// TODO: Discuss the possibility of a independent event system
-	// TODO: Add snake controls
 
 	while (playing_game)
 	{
 		int input = getch();
+
+		if(input == '\033'){
+			getch();
+			input = KEYS[getch() - 65];
+		}
 
 		switch (input)
 		{
@@ -184,6 +177,26 @@ void* get_inputs()
 
 			case ' ':
 				skip_movie();
+				break;
+
+			case 'r':
+				requested_restart = true;
+				break;
+
+			case 'w':
+				if(snake.direction != DOWN) snake.direction = UP;
+				break;
+
+			case 's':
+				if(snake.direction != UP) snake.direction = DOWN;
+				break;
+
+			case 'a':
+				if(snake.direction != RIGHT) snake.direction = LEFT;
+				break;
+
+			case 'd':
+				if(snake.direction != LEFT) snake.direction = RIGHT;
 				break;
 		}
 	}
@@ -244,13 +257,7 @@ int main(int argc, char** argv)
 
 	
 	// Ncurses initialization
-
-	initscr();
-	noecho();
-	cbreak();
-	curs_set(FALSE);
-
-	
+	screen_init();
 
 	// Handle game controls in a different thread
 
@@ -271,24 +278,23 @@ int main(int argc, char** argv)
 
 
 	// Play game
-
-	snake_t snake;
-	times_t times;
-	coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
-
+  
 	scene_t game_scenes[GAME_SCENES_SIZE];
+
 	clear_scenes(game_scenes, GAME_SCENES_SIZE);
 	load_scenes(game_scenes, GAME_SCENES_SIZE, data_path, GAME_DIRECTORY);
 
-	init_times(&times);
-	init_game(&snake, energy_blocks);
+	scene_t death_scene;
+	clear_scenes(&death_scene, DEATH_SCENE_SIZE);
+	load_scenes(&death_scene, DEATH_SCENE_SIZE, data_path, DEATH_DIRECTORY);
 
-	play_game(game_scenes, &times);
+
+	init_game();
+	play_game(game_scenes, death_scene);
 
 
 	// Cleanup and exit
-
-	endwin();
+	screen_end();
 	free(data_path);
 
 	pthread_cancel(pthread);

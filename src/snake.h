@@ -19,43 +19,48 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+#ifndef SNAKE_H
+#define SNAKE_H
 
-#include <time.h>
-#include <unistd.h>
 #include <stdbool.h>
-
-#include "movie.h"
-#include "scene.h"
 #include "graphics.h"
 
+#define SNAKE_HEAD_UP '^'
+#define SNAKE_HEAD_DOWN 'v'
+#define SNAKE_HEAD_RIGHT '>'
+#define SNAKE_HEAD_LEFT '<'
+#define SNAKE_BODY 'O'
 
-#define MOVIE_DELAY (1e5 / 4) // 40us per frame
-
-static bool playing_movie = true;
-
-
-void play_movie(scene_t scenes[MOVIE_SCENES_SIZE])
+typedef enum Direction
 {
-	int scene = 0;
-
-	struct timespec request;
-	request.tv_sec = 0;
-
-	for (int i = 0; i < MOVIE_SCENES_SIZE && playing_movie; i++)
-	{
-		// Draw the current movie frame
-		draw_background((char**)scenes[scene]);
-		screen_show();
-
-		scene = (scene + 1) % MOVIE_SCENES_SIZE;
-
-		// Wait until the next frame
-		request.tv_nsec = MOVIE_DELAY * 1e3;
-		nanosleep(&request, NULL);
-	}
+	UP,
+	DOWN,
+	LEFT,
+	RIGHT,
 }
+direction_t;
 
-void skip_movie()
-{
-	playing_movie = false;
+typedef struct Body {
+	struct sprite sp;
+	struct Body* next;
+	struct Body* prev;
 }
+body_t;
+
+typedef struct Snake {
+	body_t* head;
+	body_t* tail;
+	int prev_tail_x;
+	int prev_tail_y;
+	int length;
+	bool alive;
+	direction_t direction;
+}
+snake_t;
+
+void init_snake(snake_t* snake, int head_x, int head_y);
+void grow_snake(snake_t* snake);
+void move_snake(snake_t* snake);
+void draw_snake(snake_t* snake);
+
+#endif // SNAKE_H

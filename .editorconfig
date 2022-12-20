@@ -1,0 +1,27 @@
+# To use this config in your editor, follow the instructions at:
+# http://editorconfig.org
+
+# editor config in the project root
+root = true
+
+# all files selector
+[*]
+end_of_line = lf
+insert_final_newline = false
+charset = utf-8
+#delete white space chars preceding newline chars
+trim_trailing_whitespace = true
+
+# .c and .h files
+[*.{c,h}]
+indent_style = space
+indent_size = 4
+
+# Makefiles
+[Makefile*]
+indent_style = tab
+
+# .nix files
+[.nix]
+indent_style = space
+indent_size = 2
