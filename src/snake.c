@@ -102,10 +102,10 @@ void move_snake(snake_t* snake, double sync) {
 
 	switch(snake->direction) {
 		case UP:
-			snake->y_pos -= sync_speed;
+			snake->y_pos -= sync_speed * SCREEN_ROWS / SCREEN_COLUMNS;
 			break;
 		case DOWN:
-			snake->y_pos += sync_speed;
+			snake->y_pos += sync_speed * SCREEN_ROWS / SCREEN_COLUMNS;
 			break;
 		case LEFT:
 			snake->x_pos -= sync_speed;
