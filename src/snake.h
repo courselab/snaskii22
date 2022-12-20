@@ -22,8 +22,13 @@
 #ifndef SNAKE_H
 #define SNAKE_H
 
+#include <stdbool.h>
 #include "graphics.h"
 
+#define SNAKE_HEAD_UP '^'
+#define SNAKE_HEAD_DOWN 'v'
+#define SNAKE_HEAD_RIGHT '>'
+#define SNAKE_HEAD_LEFT '<'
 #define SNAKE_BODY 'O'
 
 typedef enum Direction
@@ -48,6 +53,7 @@ typedef struct Snake {
 	int prev_tail_x;
 	int prev_tail_y;
 	int length;
+	bool alive;
 	direction_t direction;
 }
 snake_t;

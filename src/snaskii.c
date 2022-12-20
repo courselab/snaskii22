@@ -44,7 +44,9 @@
 #define MAX_DELAY 999999
 
 #define GAME_SCENES_SIZE 1
+#define DEATH_SCENE_SIZE 1
 #define GAME_DIRECTORY "game"
+#define DEATH_DIRECTORY "death"
 #define GAME_DELAY (1e5 / 3) // 30us per frame
 
 #define ENERGY_BLOCK '+'
@@ -75,6 +77,7 @@ coord_t;
 // Global variables
 
 bool playing_game = true;
+bool requested_restart = false;
 int game_delay = GAME_DELAY;
 snake_t snake;
 times_t times;
@@ -114,7 +117,7 @@ void render(scene_t scene)
 }
 
 
-void play_game(scene_t scenes[GAME_SCENES_SIZE])
+void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 {
 	int scene = 0;
 
@@ -123,10 +126,21 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE])
 
 	while (playing_game)
 	{
-        tick_step();
-		render(scenes[scene]);
+		if (!snake.alive) 
+		{
+			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
+			screen_show();
 
-		scene = (scene + 1) % GAME_SCENES_SIZE;
+			if (requested_restart) {
+				init_game();
+				requested_restart = false;
+			}
+		} else {
+			tick_step();
+            render(scenes[scene]);
+
+			scene = (scene + 1) % GAME_SCENES_SIZE;
+		}
 
 		// Wait until the next frame
 		request.tv_nsec = game_delay * 1e3;
@@ -168,9 +182,9 @@ void* get_inputs()
 				break;
 
 			case 'r':
-				init_game();
+				requested_restart = true;
 				break;
-        
+
 			case 'w':
 				if(snake.direction != DOWN) snake.direction = UP;
 				break;
@@ -261,13 +275,16 @@ int main(int argc, char** argv)
 	clear_scenes(game_scenes, GAME_SCENES_SIZE);
 	load_scenes(game_scenes, GAME_SCENES_SIZE, data_path, GAME_DIRECTORY);
 
-	init_game();
+	scene_t death_scene;
+	clear_scenes(&death_scene, DEATH_SCENE_SIZE);
+	load_scenes(&death_scene, DEATH_SCENE_SIZE, data_path, DEATH_DIRECTORY);
 
-	play_game(game_scenes);
+
+	init_game();
+	play_game(game_scenes, death_scene);
 
 
 	// Cleanup and exit
-
 	screen_end();
 	free(data_path);
 
