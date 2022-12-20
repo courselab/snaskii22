@@ -98,6 +98,22 @@ void init_game()
 }
 
 
+void tick_step()
+{
+    update_times(&times);
+    move_snake(&snake);
+}
+
+
+void render(scene_t scene)
+{
+    draw_background((char**) scene);
+    draw_snake(&snake);
+    screen_show();
+    draw_menu(&times);
+}
+
+
 void play_game(scene_t scenes[GAME_SCENES_SIZE])
 {
 	int scene = 0;
@@ -107,17 +123,8 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE])
 
 	while (playing_game)
 	{
-		update_times(&times);
-
-		// TODO: Advance game
-		move_snake(&snake);
-
-		// Draw the current scene frame
-		draw_background((char**)scenes[scene]);
-		draw_snake(&snake);
-		screen_show();
-
-		draw_menu(&times);
+        tick_step();
+		render(scenes[scene]);
 
 		scene = (scene + 1) % GAME_SCENES_SIZE;
 
