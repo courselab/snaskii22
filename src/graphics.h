@@ -39,6 +39,7 @@ void screen_end();
 
 void screen_print(char* format, ...);
 
+void draw_death_scene(int elapsed_time, int score, char death_scene[SCREEN_ROWS][SCREEN_COLUMNS]);
 void draw_background(char** background);
 void draw_sprite(struct sprite* spr);
 

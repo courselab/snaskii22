@@ -35,6 +35,13 @@
 
 #include "graphics.h"
 
+// ! lines and columns need to reflect position of %d in sprites
+#define DEATH_SCORE_LINE 12
+#define DEATH_SCORE_COLUMN 60
+#define DEATH_TIME_LINE 13
+#define DEATH_TIME_COLUMN 70
+#define NUM_MAX_SIZE 5
+
 static char screen_buffers[2][SCREEN_ROWS][SCREEN_COLUMNS];
 static size_t curr_buffer_show = 0;
 
@@ -50,6 +57,31 @@ void screen_init() {
 
 void screen_end() {
 	endwin();
+}
+
+void draw_death_scene(int score, int elapsed_seconds, char death_scene[SCREEN_ROWS][SCREEN_COLUMNS]) {
+	char original[2][SCREEN_COLUMNS];
+	memcpy(original[0], death_scene[DEATH_SCORE_LINE], SCREEN_COLUMNS);
+	memcpy(original[1], death_scene[DEATH_TIME_LINE], SCREEN_COLUMNS);
+
+	int i = 0;
+	int val = score, mod = 0;
+	for (i = DEATH_SCORE_COLUMN; i < SCREEN_COLUMNS - 2 && val; i++) {
+		mod = val % 10; val = val / 10;
+		death_scene[DEATH_SCORE_LINE][i] = mod + '0';
+	}
+
+	val = elapsed_seconds;
+	for (i = DEATH_TIME_COLUMN; i < SCREEN_COLUMNS - 3 && val; i++) {
+		mod = val % 10; val = val / 10;
+		death_scene[DEATH_TIME_LINE][i] = mod + '0';
+	}
+	death_scene[DEATH_TIME_LINE][i + (i == DEATH_TIME_COLUMN)] = 's';
+
+	draw_background((char **)death_scene);
+
+	memcpy(death_scene[DEATH_SCORE_LINE], original[0], SCREEN_COLUMNS);
+	memcpy(death_scene[DEATH_TIME_LINE], original[1], SCREEN_COLUMNS);
 }
 
 void draw_sprite(struct sprite* spr) {
