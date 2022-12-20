@@ -29,29 +29,35 @@
 #include "graphics.h"
 
 
-#define MOVIE_DELAY (1e5 / 4) // 40us per frame
-
 static bool playing_movie = true;
 
 
-void play_movie(scene_t scenes[MOVIE_SCENES_SIZE])
+void play_movie(scene_t *scenes, int movie_scenes_size, int movie_delay, bool loop)
 {
+	playing_movie = true;
 	int scene = 0;
 
 	struct timespec request;
 	request.tv_sec = 0;
 
-	for (int i = 0; i < MOVIE_SCENES_SIZE && playing_movie; i++)
+	int i = 0;
+	while(playing_movie)
 	{
+		if(!loop && i >= movie_scenes_size){
+			break;
+		}
+
 		// Draw the current movie frame
 		draw_background((char**)scenes[scene]);
 		screen_show();
 
-		scene = (scene + 1) % MOVIE_SCENES_SIZE;
+		scene = (scene + 1) % movie_scenes_size;
 
 		// Wait until the next frame
-		request.tv_nsec = MOVIE_DELAY * 1e3;
+		request.tv_nsec = movie_delay * 1e3;
 		nanosleep(&request, NULL);
+		
+		i++;
 	}
 }
 
