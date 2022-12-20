@@ -105,8 +105,14 @@ void init_game()
 
 void tick_step()
 {
+    /*
+     * Contains all methods to perform physics, movement and calculations to be executed before
+     * rendering the screen.
+     * For example: updating the screen time, as well as calculating the snakes position
+     */
     update_times(&times);
 
+    // Sync variable calculation, for normalizing the snake's speed to the current FPS.
     double sync = (double) MIN_DELAY / get_fps(&times);
 
     move_snake(&snake, sync);
@@ -115,6 +121,12 @@ void tick_step()
 
 void render(scene_t scene)
 {
+    /*
+     * Renders a specific screen scene, as well as the menu and the current moving snake.
+     * Can be used within any game loop, and with any dynamic scene.
+     * Does not update any values, and should be only be run if both the snake and the scene
+     * have been initialized previously.
+     */
     draw_background((char**) scene);
     draw_snake(&snake);
     screen_show();
@@ -136,16 +148,21 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
 			screen_show();
 
-			if (requested_restart) {
-				init_game();
-				requested_restart = false;
-			}
+
 		} else {
+            // If snake is alive, execute main game loop body
+            // Contains code for calling the physics calculations, as well as
+            // rendering gameplay elements (scene, snake and menu)
 			tick_step();
             render(scenes[scene]);
 
 			scene = (scene + 1) % GAME_SCENES_SIZE;
 		}
+
+        if (requested_restart) {
+            init_game();
+            requested_restart = false;
+        }
 
 		// Wait until the next frame
 		request.tv_nsec = game_delay * 1e3;
