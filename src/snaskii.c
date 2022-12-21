@@ -95,6 +95,12 @@ void quit()
 	playing_game = false;
 }
 
+void panic_quit()
+{
+	endwin();
+	exit(1);
+}
+
 
 void init_game()
 {
@@ -298,6 +304,16 @@ int main(int argc, char** argv)
 	sigaction(SIGINT, &action, NULL);
 
 
+	// Handle SIGSEGV (out of bounds error) to quit	
+	
+	struct sigaction panic_action;
+	sigaction(SIGSEGV,NULL, &panic_action);
+
+	panic_action.sa_handler = panic_quit;
+	sigaction(SIGSEGV,&panic_action, NULL);
+
+	
+	// Ncurses initialization
 	screen_init();
 
 	// Handle game controls in a different thread
@@ -324,6 +340,7 @@ int main(int argc, char** argv)
 	load_scenes(menu_scene, MENU_SCENES_SIZE, data_path, MENU_DIRECTORY);
 
 	play_movie((scene_t *)menu_scene, MENU_SCENES_SIZE, MENU_DELAY, true);
+
 
 
 	// Play game
