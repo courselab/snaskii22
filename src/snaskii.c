@@ -138,6 +138,11 @@ void render(scene_t scene)
 
 void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 {
+    // adds color scheme
+    if (has_colors()) {
+        start_color();
+        init_pair(1, COLOR_RED, COLOR_BLACK);
+    }
 	int scene = 0;
 
 	struct timespec request;
@@ -147,9 +152,18 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 	{
 		if (!snake.alive) 
 		{
-			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
-			screen_show();
-
+			// colors death screen
+		    if (has_colors()){
+		        attron(COLOR_PAIR(1));
+			    draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
+			    screen_show();
+			    attroff(COLOR_PAIR(1));
+			}
+			else {
+			    
+			    draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
+			    screen_show();
+			}
 
 		} else {
             // If snake is alive, execute main game loop body
