@@ -40,6 +40,8 @@
 #define DEATH_SCORE_COLUMN 60
 #define DEATH_TIME_LINE 13
 #define DEATH_TIME_COLUMN 70
+#defube WIN_TIME_LINE 28
+#define WIN_TIME_COLUMN 52
 #define NUM_MAX_SIZE 5
 
 static char screen_buffers[2][SCREEN_ROWS][SCREEN_COLUMNS];
@@ -64,8 +66,8 @@ void draw_death_scene(int score, int elapsed_seconds, char death_scene[SCREEN_RO
 	memcpy(original[0], death_scene[DEATH_SCORE_LINE], SCREEN_COLUMNS);
 	memcpy(original[1], death_scene[DEATH_TIME_LINE], SCREEN_COLUMNS);
 
-	int i = 0;
-	int val = score, mod = 0;
+	int i, mod;
+	int val = score;
 	for (i = DEATH_SCORE_COLUMN; i < SCREEN_COLUMNS - 2 && val; i++) {
 		mod = val % 10; val = val / 10;
 		death_scene[DEATH_SCORE_LINE][i] = mod + '0';
@@ -85,7 +87,20 @@ void draw_death_scene(int score, int elapsed_seconds, char death_scene[SCREEN_RO
 }
 
 
-void draw_win_scene(int score, int elapsed_seconds, char death_scene[SCREEN_ROWS][SCREEN_COLUMNS]) {
+void draw_win_scene(int elapsed_seconds, char scene[SCREEN_ROWS][SCREEN_COLUMNS]) {
+    char original[SCREEN_COLUMNS];
+    memcpy(original, scene[WIN_SCORE_LINE], SCREEN_COLUMNS);
+
+    int i, mod;
+    for (i = DEATH_TIME_COLUMN; i < SCREEN_COLUMNS - 3 && val; i++) {
+        mod = val % 10; val = val / 10;
+        scene[DEATH_TIME_LINE][i] = mod + '0';
+    }
+    scene[WIN_TIME_LINE][i + (i == WIN_TIME_COLUMN)] = 's';
+
+    draw_background((char **)death_scene);
+    memcpy(scene[WIN_TIME_LINE], original, SCREEN_COLUMNS);
+}
 
 
 void draw_sprite(struct sprite* spr) {

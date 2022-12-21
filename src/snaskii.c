@@ -47,9 +47,11 @@
 
 #define GAME_SCENES_SIZE 1
 #define DEATH_SCENE_SIZE 1
+#define WIN_SCENE_SIZE 1
 #define MENU_SCENES_SIZE 2
 #define GAME_DIRECTORY "game"
 #define DEATH_DIRECTORY "death"
+#define WIN_DIRECTORY "win"
 #define MENU_DIRECTORY "menu"
 #define GAME_DELAY (1e5 / 3) // 30us per frame
 
@@ -163,7 +165,7 @@ void render(scene_t scene)
 }
 
 
-void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
+void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene, scene_t win_scene)
 {
 	int scene = 0;
 
@@ -174,14 +176,16 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 	{
 		if (!snake.alive) 
 		{
-			draw_death_scene(game_score, (int)times.elapsed_start.tv_sec, death_scene);
+			draw_death_scene(game_score, (int) times.elapsed_start.tv_sec, death_scene);
 			screen_show();
-
 		}
+
         else if (win_condition)
         {
-
+            draw_win_scene((int) times.elapsed_start.tv_sec, win_scene);
+            screen_show();
         }
+
         else
         {
             // If snake is alive, execute main game loop body
@@ -193,7 +197,8 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 			scene = (scene + 1) % GAME_SCENES_SIZE;
 		}
 
-        if (requested_restart) {
+        if (requested_restart)
+        {
             init_game();
             requested_restart = false;
             game_score = 0;
@@ -346,9 +351,12 @@ int main(int argc, char** argv)
 	clear_scenes(&death_scene, DEATH_SCENE_SIZE);
 	load_scenes(&death_scene, DEATH_SCENE_SIZE, data_path, DEATH_DIRECTORY);
 
+    scene_t win_scene;
+    clear_scenes(&win_scene, WIN_SCENE_SIZE);
+    load_scenes(&win_scene, WIN_SCENE_SIZE, data_path, WIN_DIRECTORY);
 
 	init_game();
-	play_game(game_scenes, death_scene);
+	play_game(game_scenes, death_scene, win_scene);
 
 
 	// Cleanup and exit
