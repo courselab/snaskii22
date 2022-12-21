@@ -89,16 +89,17 @@ void draw_death_scene(int score, int elapsed_seconds, char death_scene[SCREEN_RO
 
 void draw_win_scene(int elapsed_seconds, char scene[SCREEN_ROWS][SCREEN_COLUMNS]) {
     char original[SCREEN_COLUMNS];
-    memcpy(original, scene[WIN_SCORE_LINE], SCREEN_COLUMNS);
+    memcpy(original, scene[WIN_TIME_LINE], SCREEN_COLUMNS);
 
     int i, mod;
-    for (i = DEATH_TIME_COLUMN; i < SCREEN_COLUMNS - 3 && val; i++) {
+    int val = elapsed_seconds;
+    for (i = WIN_TIME_COLUMN; i < SCREEN_COLUMNS - 3 && val; i++) {
         mod = val % 10; val = val / 10;
-        scene[DEATH_TIME_LINE][i] = mod + '0';
+        scene[WIN_TIME_LINE][i] = mod + '0';
     }
     scene[WIN_TIME_LINE][i + (i == WIN_TIME_COLUMN)] = 's';
 
-    draw_background((char **)death_scene);
+    draw_background((char **) scene);
     memcpy(scene[WIN_TIME_LINE], original, SCREEN_COLUMNS);
 }
 
