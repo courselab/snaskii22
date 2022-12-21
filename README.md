@@ -108,13 +108,12 @@ this is weird for snakes, but this is a Tron Snake).
 The game score is the count of eaten blocks until the game is over.
 
  ### Controls:
-	WASD to control the snake
+	WASD/Arrows to control the snake
 	+ decreases the game speed
 	- increases the game speed 
 	space skips animation intro
 	q quits
 	r at anytime to restart the game
-	space skips the introduction
 
 ## Contribute to this project
 
