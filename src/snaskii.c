@@ -62,7 +62,8 @@
 	"    options:                      \n\n" \
 	"    -h         this help message    \n" \
 	"    -d <path>  path to data files   \n" \
-	"    -s         skip intro scene     \n"
+	"    -s         skip intro scene     \n" \
+	"    -b         boundless mode       \n"
 
 #define KEYS "wsda"
 
@@ -82,6 +83,7 @@ coord_t;
 
 bool playing_game = true;
 bool requested_restart = false;
+bool boundless = false;
 int game_delay = GAME_DELAY;
 snake_t snake;
 times_t times;
@@ -117,7 +119,7 @@ void tick_step()
     // Sync variable calculation, for normalizing the snake's speed to the current FPS.
     double sync = (double) MIN_DELAY / get_fps(&times);
 
-    move_snake(&snake, sync);
+    move_snake(&snake, sync, boundless);
 }
 
 
@@ -241,13 +243,17 @@ int main(int argc, char** argv)
 
 	int option;
 
-	while ((option = getopt(argc, argv, "hsd:")) != -1)
+	while ((option = getopt(argc, argv, "hbsd:")) != -1)
 	{
 		switch (option)
 		{
 			case 'h':
 				puts(USAGE);
 				exit(EXIT_SUCCESS);
+				
+		    case 'b':
+		        boundless = true;
+		        break;
 
 			case 's':
 				skip_movie();

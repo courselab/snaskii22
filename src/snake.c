@@ -84,7 +84,7 @@ bool is_inside(body_t *aux) {
 }
 
 
-void move_snake(snake_t* snake, double sync) {
+void move_snake(snake_t* snake, double sync, bool boundless) {
 	body_t* aux = pop_back(snake);
 
 	snake->prev_tail_x = aux->sp.x_pos;
@@ -93,9 +93,12 @@ void move_snake(snake_t* snake, double sync) {
 	aux->sp.x_pos = (int) snake->x_pos;
 	aux->sp.y_pos = (int) snake->y_pos;
 	push_front(snake, aux);
-
-	if (!is_inside(aux)) {
-		snake->alive = false;
+    
+    // the snake only dies hitting bounds in non-boundless mode (i.e normal mode)
+    if (!boundless){
+	    if (!is_inside(aux)) {
+		    snake->alive = false;
+	    }
 	}
 
     double sync_speed = snake->speed * sync;
@@ -105,16 +108,40 @@ void move_snake(snake_t* snake, double sync) {
 
 	switch(snake->direction) {
 		case UP:
-			snake->y_pos -= vertical_speed;
+		    // loop across edge
+		    if (boundless && (snake->y_pos - vertical_speed <= 0)){
+		        snake->y_pos = SCREEN_ROWS - vertical_speed;
+		    }
+		    else {
+		        snake->y_pos -= vertical_speed;
+		    }
 			break;
 		case DOWN:
-			snake->y_pos += vertical_speed;
+		    // loop across edge
+			if (boundless && (snake->y_pos + vertical_speed >= SCREEN_ROWS)){
+		        snake->y_pos = vertical_speed;
+		    }
+		    else {
+		        snake->y_pos += vertical_speed;
+		    }
 			break;
 		case LEFT:
-			snake->x_pos -= horizontal_speed;
+		    // loop across edge
+			if (boundless && (snake->x_pos - horizontal_speed <= 0)){
+		        snake->x_pos = SCREEN_COLUMNS - horizontal_speed;
+		    }
+		    else {
+		        snake->x_pos -= horizontal_speed;
+		    }
 			break;
 		case RIGHT:
-			snake->x_pos += horizontal_speed;
+		    // loop across edge
+			if (boundless && (snake->x_pos + horizontal_speed >= SCREEN_COLUMNS)){
+		        snake->x_pos = horizontal_speed;
+		    }
+		    else {
+		        snake->x_pos += horizontal_speed;
+		    }
 			break;
 	}
 }
