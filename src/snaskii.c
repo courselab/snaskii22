@@ -82,6 +82,7 @@ coord_t;
 
 bool playing_game = true;
 bool requested_restart = false;
+bool win_condition = false;
 int game_delay = GAME_DELAY;
 snake_t snake;
 times_t times;
@@ -141,6 +142,9 @@ void tick_step()
         game_score++;
         // delete_energy(energy_target);
     }
+
+    if (game_score == (SCREEN_COLUMNS - 2) * (SCREEN_ROWS - 2))
+        win_condition = true;
 }
 
 
@@ -173,8 +177,13 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 			draw_death_scene(game_score, (int)times.elapsed_start.tv_sec, death_scene);
 			screen_show();
 
+		}
+        else if (win_condition)
+        {
 
-		} else {
+        }
+        else
+        {
             // If snake is alive, execute main game loop body
             // Contains code for calling the physics calculations, as well as
             // rendering gameplay elements (scene, snake and menu)

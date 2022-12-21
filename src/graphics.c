@@ -84,6 +84,10 @@ void draw_death_scene(int score, int elapsed_seconds, char death_scene[SCREEN_RO
 	memcpy(death_scene[DEATH_TIME_LINE], original[1], SCREEN_COLUMNS);
 }
 
+
+void draw_win_scene(int score, int elapsed_seconds, char death_scene[SCREEN_ROWS][SCREEN_COLUMNS]) {
+
+
 void draw_sprite(struct sprite* spr) {
 	screen_buffers[!curr_buffer_show][spr->y_pos][spr->x_pos] = spr->value;
 }
