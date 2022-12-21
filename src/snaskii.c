@@ -98,9 +98,9 @@ void quit()
 void init_game()
 {
 	init_times(&times);
-  
+
 	init_snake(&snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
-  
+
 	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
 }
 
@@ -145,7 +145,7 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 
 	while (playing_game)
 	{
-		if (!snake.alive) 
+		if (!snake.alive)
 		{
 			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
 			screen_show();
@@ -176,15 +176,23 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 void* get_inputs()
 {
 	// TODO: Discuss the possibility of a independent event system
-
+	int x_past = -1;
+	int y_past = -1;
+	int x_now=-2;
+	int y_now=-2;
 	while (playing_game)
 	{
+
 		int input = getch();
 
 		if(input == '\033'){
 			getch();
-			input = KEYS[getch() - 65];
+			input = KEYS[(getch() - 65)];
 		}
+
+		// get snake currnt position
+		x_now = (int) snake.x_pos;
+		y_now = (int) snake.y_pos;
 
 		switch (input)
 		{
@@ -210,22 +218,48 @@ void* get_inputs()
 				break;
 
 			case 'w':
-				if(snake.direction != DOWN) snake.direction = UP;
+
+				if(x_now == x_past) break; //check if is changing dir twice in the same position
+				if(snake.direction != DOWN){
+					snake.direction = UP;
+					// att last dir change position
+					x_past = x_now;
+					y_past = y_now;
+				}
 				break;
 
 			case 's':
-				if(snake.direction != UP) snake.direction = DOWN;
+				if(x_now == x_past) break;//check if is changing dir twice in the same position
+				if(snake.direction != UP){
+					snake.direction = DOWN;
+					// att last dir change position
+					x_past = x_now;
+					y_past = y_now;
+				}
 				break;
 
 			case 'a':
-				if(snake.direction != RIGHT) snake.direction = LEFT;
+				if(y_now == y_past) break;//check if is changing dir twice in the same position
+				if(snake.direction != RIGHT){
+					snake.direction = LEFT;
+					// att last dir change position
+					x_past = x_now;
+					y_past = y_now;
+				}
 				break;
 
 			case 'd':
-				if(snake.direction != LEFT) snake.direction = RIGHT;
+				if(y_now == y_past) break;//check if is changing dir twice in the same position
+				if(snake.direction != LEFT){
+					snake.direction = RIGHT;
+					// att last dir change position
+					x_past = x_now;
+					y_past = y_now;
+				}
 				break;
+			}
+
 		}
-	}
 
 	return NULL;
 }
@@ -302,7 +336,7 @@ int main(int argc, char** argv)
 
 
 	// Play game
-  
+
 	scene_t game_scenes[GAME_SCENES_SIZE];
 
 	clear_scenes(game_scenes, GAME_SCENES_SIZE);
