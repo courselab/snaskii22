@@ -251,6 +251,7 @@ int main(int argc, char** argv)
 				puts(USAGE);
 				exit(EXIT_SUCCESS);
 				
+			// boundless mode: if enabled, the snake doesn't die hitting the edges	
 		    case 'b':
 		        boundless = true;
 		        break;
