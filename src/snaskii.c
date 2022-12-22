@@ -141,7 +141,8 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
     // adds color scheme
     if (has_colors()) {
         start_color();
-        init_pair(1, COLOR_RED, COLOR_BLACK);
+        // death screen color pair
+        init_pair(1, COLOR_BLACK, COLOR_RED);
     }
 	int scene = 0;
 
