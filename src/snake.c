@@ -99,7 +99,7 @@ void move_snake(snake_t* snake, double sync) {
 	aux->sp.y_pos = (int) snake->y_pos;
 	push_front(snake, aux);
 
-	if (!is_inside(aux) || self_eating(snake->head ,snake->x_pos , snake->y_pos)) {
+	if (!is_inside(aux) || self_eating(snake->head->next->next ,snake->x_pos , snake->y_pos)) {
 		snake->alive = false;
 	}
 
