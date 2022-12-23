@@ -83,11 +83,6 @@ bool is_inside(body_t *aux) {
            aux->sp.y_pos > 0 && aux->sp.y_pos < SCREEN_ROWS - 1;
 }
 
-bool self_eating(body_t*aux , int x , int y){
-    if(aux == NULL) return false;
-    if(aux->sp.x_pos == x && aux->sp.y_pos == y) return true;
-    return self_eating(aux->next , x , y);
-}
 
 void move_snake(snake_t* snake, double sync) {
 	body_t* aux = pop_back(snake);
@@ -99,7 +94,7 @@ void move_snake(snake_t* snake, double sync) {
 	aux->sp.y_pos = (int) snake->y_pos;
 	push_front(snake, aux);
 
-	if (!is_inside(aux) || self_eating(snake->head ,snake->x_pos , snake->y_pos)) {
+	if (!is_inside(aux)) {
 		snake->alive = false;
 	}
 
