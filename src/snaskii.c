@@ -88,6 +88,7 @@ int game_delay = GAME_DELAY;
 snake_t snake;
 times_t times;
 coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
+int game_score;
 
 
 void quit()
@@ -107,6 +108,20 @@ void init_game()
 }
 
 
+int detect_collision(coord_t target[], int max_targets) {
+
+    for (int i = 0; i < max_targets; i++) {
+
+        if (target[i].x == snake.head->sp.x_pos && target[i].y == snake.head->sp.y_pos) {
+            // Return the index of the collided target
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+
 void tick_step()
 {
     /*
@@ -120,6 +135,14 @@ void tick_step()
     double sync = (double) MIN_DELAY / get_fps(&times);
 
     move_snake(&snake, sync, boundless);
+
+    int energy_target = detect_collision(energy_blocks, ENERGY_BLOCKS_SIZE);
+
+    // TODO: When merging with PR #47, deallocate or remove energy block from game context
+    if (energy_target != -1) {
+        game_score++;
+        // delete_energy(energy_target);
+    }
 }
 
 
@@ -149,7 +172,7 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
 	{
 		if (!snake.alive) 
 		{
-			draw_death_scene(0, (int)times.elapsed_start.tv_sec, death_scene);
+			draw_death_scene(game_score, (int)times.elapsed_start.tv_sec, death_scene);
 			screen_show();
 
 
@@ -166,6 +189,8 @@ void play_game(scene_t scenes[GAME_SCENES_SIZE], scene_t death_scene)
         if (requested_restart) {
             init_game();
             requested_restart = false;
+            game_score = 0;
+
         }
 
 		// Wait until the next frame
