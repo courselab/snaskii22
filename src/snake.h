@@ -63,7 +63,7 @@ snake_t;
 
 void init_snake(snake_t* snake, int head_x, int head_y);
 void grow_snake(snake_t* snake);
-void move_snake(snake_t* snake, double sync);
+void move_snake(snake_t* snake, double sync, bool boundless);
 void draw_snake(snake_t* snake);
 
 #endif // SNAKE_H
