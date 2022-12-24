@@ -42,5 +42,6 @@ void screen_print(char* format, ...);
 void draw_death_scene(int score, int elapsed_time, char death_scene[SCREEN_ROWS][SCREEN_COLUMNS]);
 void draw_background(char** background);
 void draw_sprite(struct sprite* spr);
+void put_energy_block(int x, int y);
 
 #endif // GRAPHICS_H
