@@ -30,6 +30,9 @@ dist_snaskii_game_DATA = game/scene-0000001.txt
 snaskii_deathdir = $(datadir)/snaskii/death
 dist_snaskii_death_DATA = death/scene-0000001.txt
 
+snaskii_windir = $(datadir)/snaskii/win
+dist_snaskii_win_DATA = win/scene-0000001.txt
+
 snaskii_menudir = $(datadir)/snaskii/menu
 dist_snaskii_menu_DATA = menu/scene-0000001.txt menu/scene-0000002.txt
 
