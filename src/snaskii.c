@@ -88,37 +88,39 @@ times_t times;
 coord_t energy_blocks[ENERGY_BLOCKS_SIZE];
 int game_score;
 
-
 void quit()
 {
 	skip_movie();
 	playing_game = false;
 }
 
+void init_energy_blocks(){
+	srand(time(NULL));
+
+	for(int i = 0; i < ENERGY_BLOCKS_SIZE; i++){
+		energy_blocks[i].x = rand() % (SCREEN_COLUMNS - 1);
+		energy_blocks[i].y = rand() % (SCREEN_ROWS - 1);
+		energy_blocks[i].x++; energy_blocks[i].y++; // to prevent an index 0
+	}
+}
 
 void init_game()
 {
 	init_times(&times);
   
 	init_snake(&snake, SCREEN_COLUMNS/2, SCREEN_ROWS/2);
-  
-	memset(energy_blocks, INACTIVE_BLOCK, ENERGY_BLOCKS_SIZE * sizeof(coord_t));
+
+	init_energy_blocks();
 }
 
+bool collected_fruit(){
 
-int detect_collision(coord_t target[], int max_targets) {
+    if(energy_blocks[game_score].x == snake.head->sp.x_pos &&
+	   energy_blocks[game_score].y == snake.head->sp.y_pos)
+        return true;
 
-    for (int i = 0; i < max_targets; i++) {
-
-        if (target[i].x == snake.head->sp.x_pos && target[i].y == snake.head->sp.y_pos) {
-            // Return the index of the collided target
-            return i;
-        }
-    }
-
-    return -1;
+    return false;
 }
-
 
 void tick_step()
 {
@@ -132,15 +134,10 @@ void tick_step()
     // Sync variable calculation, for normalizing the snake's speed to the current FPS.
     double sync = (double) MIN_DELAY / get_fps(&times);
 
-    move_snake(&snake, sync);
+    move_snake(&snake, sync, game_score, ENERGY_BLOCKS_SIZE);
 
-    int energy_target = detect_collision(energy_blocks, ENERGY_BLOCKS_SIZE);
-
-    // TODO: When merging with PR #47, deallocate or remove energy block from game context
-    if (energy_target != -1) {
+	if(collected_fruit())
         game_score++;
-        // delete_energy(energy_target);
-    }
 }
 
 
@@ -154,6 +151,8 @@ void render(scene_t scene)
      */
     draw_background((char**) scene);
     draw_snake(&snake);
+	if(game_score != ENERGY_BLOCKS_SIZE)
+		put_energy_block(energy_blocks[game_score].x, energy_blocks[game_score].y);
     screen_show();
     draw_menu(&times);
 }

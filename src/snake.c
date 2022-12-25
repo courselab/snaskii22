@@ -89,7 +89,7 @@ bool self_eating(body_t*aux , int x , int y){
     return self_eating(aux->next , x , y);
 }
 
-void move_snake(snake_t* snake, double sync) {
+void move_snake(snake_t* snake, double sync, int game_score, int max_game_score) {
 	body_t* aux = pop_back(snake);
 
 	snake->prev_tail_x = aux->sp.x_pos;
@@ -99,7 +99,10 @@ void move_snake(snake_t* snake, double sync) {
 	aux->sp.y_pos = (int) snake->y_pos;
 	push_front(snake, aux);
 
-	if (!is_inside(aux) || self_eating(snake->head->next->next ,snake->x_pos , snake->y_pos)) {
+	if (!is_inside(aux) ||
+		self_eating(snake->head->next->next ,snake->x_pos , snake->y_pos) ||
+		game_score == max_game_score){
+
 		snake->alive = false;
 	}
 

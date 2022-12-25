@@ -88,6 +88,10 @@ void draw_sprite(struct sprite* spr) {
 	screen_buffers[!curr_buffer_show][spr->y_pos][spr->x_pos] = spr->value;
 }
 
+void put_energy_block(int x, int y){
+	screen_buffers[!curr_buffer_show][y][x] = '+';
+}
+
 void draw_background(char** background) {
 	memcpy(screen_buffers[!curr_buffer_show], background, SCREEN_ROWS * SCREEN_COLUMNS);
 }
