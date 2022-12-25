@@ -7,22 +7,6 @@ undergraduate CS students.
 
 ## Quick start
 
-### Dependencies
-Before running the scripts, make sure you have the necessary dependencies installed.
-- GNU Build System (Autotools)
-- libncurses
-- Support for POSIX thread
-
-#### Debian/Ubuntu
-```
-$ sudo apt install automake autoconf libtool libncurses5-dev
-```
-#### Arch
-```
-$ sudo pacman -S automake autoconf libtool ncurses ncurses5-compat-libs
-```
- 
-### Installing
  If you have obtained the project source from the __version control repository__,
 
  execute the script 
@@ -31,7 +15,16 @@ $ sudo pacman -S automake autoconf libtool ncurses ncurses5-compat-libs
  $ ./bootstrap.sh
  ```
 
-to boostrap the build configuration script `configure`. 
+to boostrap the build configuration script `configure`. To that end, you'll 
+need to have GNU Build System (Autotools) installed as shown below:
+#### Debian/Ubuntu
+```
+$ sudo apt install automake autoconf libtool
+```
+#### Arch
+```
+$ sudo pacman -S automake autoconf libtool
+```
 
 On the other hand, if you have obtained the software form a __distribution 
 repository__, usually as a tarball, you should already have the  script `configure`.
@@ -45,6 +38,19 @@ Either way, locate the file in the root of source directory and execute it
 This script shall perform a series of tests to collect data about the build 
 platform. If it complains about missing pieces of software, install them 
 as needed.
+
+For instance, you'll need `libncurses`, which may be
+installed with:
+#### Debian/Ubuntu
+```
+$ sudo apt install libncurses5-dev
+```
+#### Arch
+```
+$ sudo pacman -S ncurses ncurses5-compat-libs
+```
+
+Support for POSIX thread is also required.
 
 Finally, build the software and install it with
 
@@ -118,4 +124,3 @@ docs/CONTRIBUTING.md
 ```
 
 which contains important information.
-
