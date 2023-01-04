@@ -16,11 +16,16 @@ undergraduate CS students.
  ```
 
 to boostrap the build configuration script `configure`. To that end, you'll 
-need to have GNU Build System (Autotools) installed. In debian/ubuntu based 
-platforms,  you may install required software with
+need to have GNU Build System (Autotools) installed.
+The command lines for the mentioned software installation in each operating system follows:
 
+**Debian/Ubuntu**
 ```
 $ sudo apt install automake autoconf libtool
+```
+**MacOS**
+```
+$ brew install automake autoconf libtool
 ```
 
 On the other hand, if you have obtained the software form a __distribution 
@@ -36,11 +41,15 @@ This script shall perform a series of tests to collect data about the build
 platform. If it complains about missing pieces of software, install them 
 as needed.
 
-For instance, you'll need `libncurses`, which in debian/ubuntu may be
-installed with
+For instance, you'll need `libncurses`, which can be installed through:
 
+**Debian/Ubuntu**
 ```
 sudo apt install libncurses5-dev
+```
+**MacOS**
+```
+brew install ncurses
 ```
 
 Support for POSIX thread is also required.
@@ -117,4 +126,3 @@ docs/CONTRIBUTING.md
 ```
 
 which contains important information.
-
